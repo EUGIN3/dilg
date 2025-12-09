@@ -1,0 +1,2249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Application Request - DILG</title>
+  <link rel="stylesheet" href="{% static 'CSS/dashboard.css' %}">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --bg-tertiary: #e9ecef;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-muted: #868e96;
+      --border-color: #dee2e6;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
+      --accent-primary: #007bff;
+      --accent-hover: #0056b3;
+      --success: #28a745;
+      --success-hover: #218838;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --info: #17a2b8;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      color: #0b1a50;
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+
+    .sidebar .logo {
+      width: 140px;
+      margin: 24px auto;
+      display: block;
+    }
+
+    .menu-title {
+      padding: 16px 24px;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 32px;
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      min-height: 100vh;
+    }
+
+    .header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .public-form-btn, .back-button {
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .public-form-btn {
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+    }
+
+    .public-form-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .back-button {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .back-button:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-primary);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: currentColor;
+      opacity: 0.03;
+      border-radius: 50%;
+      transform: translate(30%, -30%);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .stat-card:nth-child(1) { 
+      border-color: var(--warning);
+      color: var(--warning);
+    }
+    .stat-card:nth-child(2) { 
+      border-color: var(--success);
+      color: var(--success);
+    }
+    .stat-card:nth-child(3) { 
+      border-color: var(--danger);
+      color: var(--danger);
+    }
+    .stat-card:nth-child(4) { 
+      border-color: var(--info);
+      color: var(--info);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .table-container {
+      background: var(--bg-primary);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      position: relative;
+      height: calc(100vh - 40px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      z-index: 10;
+    }
+
+    .table-wrapper {
+      overflow-y: auto;
+      overflow-x: auto;
+      flex: 1;
+    }
+
+    .table-header h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .search-input, .filter-select {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9375rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input {
+      width: 250px;
+    }
+
+    .search-input:focus, .filter-select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    /* View Toggle Buttons */
+    .view-toggle-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .view-toggle-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .view-toggle-btn.active {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .application-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .application-table thead {
+      background: var(--accent-hover);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .application-table th {
+      padding: 16px;
+      text-align: left;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--bg-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border-color);
+      background: var(--accent-hover);
+    }
+
+    .application-table td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+    }
+
+    .application-table tbody tr {
+      transition: background 0.2s ease;
+    }
+
+    .application-table tbody tr:hover {
+      background: var(--bg-secondary);
+    }
+
+    .application-table tbody tr.archived {
+      opacity: 0.6;
+      background: var(--bg-secondary);
+    }
+
+    .status-select {
+      padding: 6px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .status-select:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .view-btn,.view-btns, .save-btn, .archive-btn, .restore-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-right: 8px;
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+  line-height: 1;
+      gap: 4px;
+    }
+
+    .view-btn {
+      background: #138496;
+      color: white;
+    }
+    .view-btns {
+      color: white;
+    }
+    .view-btns:hover {
+      background: #138496;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .view-btn:hover {
+      background: #138496;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .save-btn {
+
+      color: white;
+    }
+
+    .save-btn:hover {
+      background: var(--success-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .archive-btn {
+
+      color: #212529;
+    }
+
+    .archive-btn:hover {
+      background: #e0a800;
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .restore-btn {
+      background: var(--success);
+      color: white;
+    }
+
+    .restore-btn:hover {
+      background: var(--success-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-content {
+      background: var(--bg-primary);
+      margin: 5% auto;
+      padding: 0;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .close {
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .close:hover {
+      color: var(--danger);
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .application-details h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      margin-top: 24px;
+    }
+
+    .application-details h4:first-child {
+      margin-top: 0;
+    }
+
+    .application-details p {
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .application-details strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .modal-actions {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .status-pending { 
+      color: var(--warning);
+      font-weight: 600;
+    }
+    .status-approved { 
+      color: var(--success);
+      font-weight: 600;
+    }
+    .status-rejected { 
+      color: var(--danger);
+      font-weight: 600;
+    }
+    .status-processing { 
+      color: var(--info);
+      font-weight: 600;
+    }
+
+    .archived-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: var(--text-muted);
+      color: white;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .documents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .document-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .document-item:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--accent-primary);
+    }
+
+    .document-icon {
+      font-size: 32px;
+      color: var(--accent-primary);
+      margin-bottom: 10px;
+    }
+
+    .document-name {
+      font-weight: 500;
+      margin-bottom: 10px;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+
+    .no-documents {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 20px;
+      grid-column: 1 / -1;
+    }
+
+   /* Custom Confirmation Modal */
+.custom-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}
+
+.custom-confirm-dialog {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9);
+  animation: scaleIn 0.3s ease forwards;
+  overflow: hidden;
+}
+
+@keyframes scaleIn {
+  to { transform: scale(1); }
+}
+
+.custom-confirm-header {
+  padding: 24px 24px 16px;
+  text-align: center;
+}
+
+.custom-confirm-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.custom-confirm-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.custom-confirm-body {
+  padding: 0 24px 24px;
+  text-align: center;
+}
+
+.custom-confirm-message {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.custom-confirm-footer {
+  padding: 16px 24px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.custom-confirm-btn {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.custom-confirm-btn-cancel {
+  background: #f8f9fa;
+  color: var(--text-secondary);
+  border: 2px solid #dee2e6;
+}
+
+.custom-confirm-btn-cancel:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.custom-confirm-btn-confirm {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  color: #2d3436;
+}
+
+.custom-confirm-btn-confirm:hover {
+  background: linear-gradient(135deg, #fdcb6e 0%, #f39c12 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(253, 203, 110, 0.4);
+}
+/* Custom Prompt Input */
+.custom-prompt-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.custom-prompt-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.custom-prompt-input::placeholder {
+  color: #adb5bd;
+}/* Red notification dot */
+.red-dot {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #dc3545;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+/* ===========================
+   RESPONSIVE DESIGN - APPLICATION REQUEST PAGE
+   =========================== */
+
+/* Desktop 1366x768 Specific */
+@media (max-width: 1366px) and (min-width: 1200px) {
+  .sidebar {
+    width: 220px;
+  }
+  
+  .main-content {
+    margin-left: 220px;
+    padding: 24px 28px;
+  }
+  
+  .header h1 {
+    font-size: 1.75rem;
+  }
+  
+  .stats-container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  
+  .stat-card {
+    padding: 18px;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+  }
+  
+  .table-container {
+    padding: 20px;
+    height: calc(100vh - 420px);
+  }
+  
+  .application-table th,
+  .application-table td {
+    padding: 12px;
+    font-size: 0.875rem;
+  }
+  
+  .public-form-btn,
+  .back-button {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Large Desktop (1200px - 1600px) */
+@media (max-width: 1600px) {
+  .stats-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Medium Desktop (1024px - 1200px) */
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 240px;
+  }
+  
+  .main-content {
+    margin-left: 240px;
+    padding: 24px;
+  }
+  
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .table-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  .application-table {
+    font-size: 0.875rem;
+  }
+  
+  .application-table th,
+  .application-table td {
+    padding: 12px 10px;
+  }
+}
+
+/* Tablet Portrait (768px - 1024px) */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 200px;
+  }
+  
+  .main-content {
+    margin-left: 200px;
+    padding: 20px;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .table-container {
+    height: auto;
+    min-height: 400px;
+  }
+  
+  /* Make table scrollable horizontally on tablets */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .application-table {
+    min-width: 900px;
+  }
+}
+
+/* Mobile & Small Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Hide sidebar by default */
+  .sidebar {
+    width: 240px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    position: fixed;
+    z-index: 1000;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+  }
+  
+  /* Main content full width */
+  .main-content {
+    margin-left: 0;
+    padding: 20px 16px;
+    width: 100%;
+  }
+  
+  /* Header */
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .public-form-btn,
+  .back-button {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+  }
+  
+  /* Stats - Single Column */
+  .stats-container {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-number {
+    font-size: 2.2rem;
+  }
+  
+  /* Table Container */
+  .table-container {
+    padding: 16px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .table-header h2 {
+    font-size: 1.125rem;
+  }
+  
+  /* Table Actions */
+  .table-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  
+  .search-input,
+  .filter-select {
+    width: 100%;
+  }
+  
+  /* View Toggle - Horizontal on Mobile */
+  .table-actions > div:first-child {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .view-toggle-btn {
+    flex: 1;
+    justify-content: center;
+  }
+  
+  /* Table - Horizontal Scroll */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+  
+  .application-table {
+    min-width: 800px;
+    font-size: 0.8125rem;
+  }
+  
+  .application-table th,
+  .application-table td {
+    padding: 10px 8px;
+    white-space: nowrap;
+  }
+  
+  /* Action Buttons - Smaller on Mobile */
+  .view-btns,
+  .save-btn,
+  .archive-btn,
+  .restore-btn {
+    padding: 6px 10px;
+    font-size: 0.8125rem;
+    margin-right: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Icon images in buttons */
+  .icon-img-large {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+  
+  /* Actions column - prevent wrapping */
+  .application-table td:last-child {
+    white-space: nowrap;
+    min-width: 140px;
+  }
+  
+  .status-select {
+    padding: 5px 10px;
+    font-size: 0.8125rem;
+  }
+  
+  /* Modal */
+  .modal-content {
+    width: 95%;
+    margin: 10% auto;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .modal-header,
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .modal-header h3 {
+    font-size: 1.125rem;
+  }
+  
+  .documents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  
+  .document-item {
+    padding: 15px;
+  }
+  
+  .document-icon {
+    font-size: 28px;
+  }
+  
+  .document-name {
+    font-size: 0.8125rem;
+  }
+  
+  /* Custom Confirm Dialog */
+  .custom-confirm-dialog {
+    width: 95%;
+    max-width: 380px;
+  }
+  
+  .custom-confirm-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+  
+  .custom-confirm-title {
+    font-size: 1.25rem;
+  }
+  
+  .custom-confirm-message {
+    font-size: 0.9375rem;
+  }
+  
+  .custom-confirm-footer {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+  
+  .custom-confirm-btn {
+    width: 100%;
+  }
+}
+
+/* Small Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 200px;
+  }
+  
+  .main-content {
+    padding: 16px 12px;
+  }
+  
+  .header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .stats-container {
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 16px;
+  }
+  
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+  }
+  
+  .table-container {
+    padding: 12px;
+  }
+  
+  .table-header h2 {
+    font-size: 1rem;
+  }
+  
+  .application-table {
+    min-width: 700px;
+    font-size: 0.75rem;
+  }
+  
+  .application-table th,
+  .application-table td {
+    padding: 8px 6px;
+  }
+  
+  .view-btns,
+  .save-btn,
+  .archive-btn,
+  .restore-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    margin-right: 3px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  /* Icon images smaller */
+  .icon-img-large {
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Actions column - keep buttons in one line */
+  .application-table td:last-child {
+    white-space: nowrap;
+    min-width: 120px;
+  }
+  
+  .modal-content {
+    width: 96%;
+    margin: 5% auto;
+  }
+  
+  .modal-header,
+  .modal-body {
+    padding: 16px;
+  }
+  
+  .application-details h4 {
+    font-size: 0.9375rem;
+    margin-top: 20px;
+  }
+  
+  .application-details p {
+    font-size: 0.8125rem;
+    margin-bottom: 10px;
+  }
+  
+  .documents-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .custom-confirm-header {
+    padding: 20px 20px 12px;
+  }
+  
+  .custom-confirm-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+  
+  .custom-confirm-title {
+    font-size: 1.125rem;
+  }
+  
+  .custom-prompt-input {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    min-height: 80px;
+  }
+}
+
+/* Very Small Screens (max-width: 360px) */
+@media (max-width: 360px) {
+  .main-content {
+    padding: 12px 8px;
+  }
+  
+  .header h1 {
+    font-size: 1.125rem;
+  }
+  
+  .stat-number {
+    font-size: 1.6rem;
+  }
+  
+  .table-container {
+    padding: 10px;
+  }
+  
+  .application-table {
+    font-size: 0.7rem;
+  }
+  
+  .public-form-btn,
+  .back-button {
+    padding: 8px 12px;
+    font-size: 0.8125rem;
+  }
+}
+
+/* Mobile Menu Toggle */
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: var(--shadow);
+  }
+  
+  .mobile-menu-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    position: relative;
+    transition: 0.3s;
+  }
+  
+  .mobile-menu-toggle span::before,
+  .mobile-menu-toggle span::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 2px;
+    background: var(--text-primary);
+    transition: 0.3s;
+  }
+  
+  .mobile-menu-toggle span::before {
+    top: -8px;
+  }
+  
+  .mobile-menu-toggle span::after {
+    bottom: -8px;
+  }
+  
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
+  }
+  
+  /* Adjust header spacing for mobile menu */
+  .header {
+    margin-top: 50px;
+  }
+}
+
+/* Landscape Phones */
+@media (max-width: 768px) and (orientation: landscape) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .modal-content {
+    max-height: 70vh;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .sidebar,
+  .mobile-menu-toggle,
+  .sidebar-overlay,
+  .back-button,
+  .public-form-btn,
+  .archive-btn,
+  .restore-btn,
+  .save-btn {
+    display: none !important;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    padding: 0;
+  }
+  
+  .header-actions {
+    display: none;
+  }
+  
+  .table-container {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  
+  .application-table {
+    font-size: 10pt;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .stat-card,
+  .table-container,
+  .modal-content {
+    border: 2px solid #000000;
+  }
+  
+  .view-toggle-btn.active {
+    background: #000000;
+    color: #ffffff;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  
+  .sidebar {
+    transition: none;
+  }
+  
+  .modal-content {
+    animation: none;
+  }
+}
+
+/* Fix for sticky table header on mobile */
+@media (max-width: 768px) {
+  .application-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+  .view-btns,
+  .save-btn,
+  .archive-btn,
+  .restore-btn,
+  .status-select {
+    min-height: 36px;
+    min-width: 36px;
+  }
+  
+  .close {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+/* Icon images inside buttons */
+.icon-img-large {
+  display: block;
+  object-fit: contain;
+}
+
+/* Actions table cell */
+.application-table td:last-child {
+  white-space: nowrap;
+  text-align: left;
+}
+
+/* Additional responsive fix for very small screens */
+@media (max-width: 360px) {
+  .view-btns,
+  .save-btn,
+  .archive-btn,
+  .restore-btn {
+    padding: 3px 6px;
+    margin-right: 2px;
+  }
+  
+  .icon-img-large {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Stack buttons vertically on very narrow screens if needed */
+@media (max-width: 320px) {
+  .application-table td:last-child {
+    white-space: normal;
+  }
+  
+  .view-btns,
+  .save-btn,
+  .archive-btn,
+  .restore-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+    margin-right: 0;
+  }
+}
+
+
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+<div class="sidebar">
+  <a href="{% url 'landing_menu' %}">
+    <img src="{% static 'Pictures/logo1.png' %}" alt="DILG Logo" class="logo">
+  </a>
+  <div class="menu-title">Navigation</div>
+  <ul class="nav-menu">
+    <li>
+      <a href="{% url 'dashboard' %}">
+         Dashboard
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'application_request' %}" style="position: relative;" class="active">
+         Application Request
+        {% if pending_applications_count > 0 %}
+        <span class="red-dot"></span>
+        {% endif %}
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'pending_users' %}" style="position: relative;">
+         User Approvals
+        {% if pending_count > 0 %}
+        <span class="red-dot"></span>
+        {% endif %}
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'employees_profile' %}">
+         Employees Profile
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'folder' %}" style="position: relative;">
+         Folders
+        {% if monitoring_count > 0 or certification_count > 0 %}
+        <span class="red-dot"></span>
+        {% endif %}
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'settings' %}">
+         Settings
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="header">
+        <h1>Application Request Management</h1>
+        <div class="header-actions">
+          <a href="{% url 'civil_service_certification' %}" class="public-form-btn" target="_blank">
+             Public Certification Form
+          </a>
+          <a href="/dashboard/" class="back-button">← Back</a>
+        </div>
+      </div>
+
+      <!-- Quick Stats Section -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number" id="pendingCount">0</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="approvedCount">0</div>
+          <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="rejectedCount">0</div>
+          <div class="stat-label">Rejected</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalCount">0</div>
+          <div class="stat-label">Total Active</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <h2>Eligibility Certification Requests</h2>
+          <div class="table-actions">
+            <!-- View Toggle -->
+            <div style="display: flex; gap: 8px; background: var(--bg-secondary); padding: 4px; border-radius: 6px;">
+              <button type="button" class="view-toggle-btn active" id="activeViewBtn" onclick="switchView('active')">
+                 Active
+              </button>
+              <button type="button" class="view-toggle-btn" id="archivedViewBtn" onclick="switchView('archived')">
+                 Archived
+              </button>
+            </div>
+            
+            <input type="text" id="searchInput" placeholder="Search by name..." class="search-input">
+            <select id="statusFilter" class="filter-select">
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="processing">Processing</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="application-table" id="applicationTable">
+            <thead>
+              <tr>
+                <th>Client Name</th>
+                <th>Request ID</th>
+                <th>Date Submitted</th>
+                <th>Certifier Requested</th>
+                <th>Status</th>
+                <th>Approved by</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+          <tbody>
+            {% for request in requests %}
+            <tr data-id="{{ request.id }}" 
+                class="{% if request.archived %}archived{% endif %}"
+                data-archived="{{ request.archived|yesno:'true,false' }}">
+              <td>
+                {{ request.full_name }}
+                {% if request.archived %}
+                <span class="archived-badge">Archived</span>
+                {% endif %}
+              </td>
+              <td>0{{ request.id }}</td>
+              <td>{{ request.date_submitted|date:"Y-m-d" }}</td>
+              <td>{{ request.get_certifier_display }}</td>
+              <td>
+                <select class="status-select" data-original="{{ request.status }}" {% if request.archived %}disabled{% endif %}>
+                  <option value="pending" {% if request.status == 'pending' %}selected{% endif %}>Pending</option>
+                  <option value="approved" {% if request.status == 'approved' %}selected{% endif %}>Approved</option>
+                  <option value="rejected" {% if request.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                  <option value="processing" {% if request.status == 'processing' %}selected{% endif %}>Processing</option>
+                </select>
+              </td>
+              <td class="approved-by">
+                {% if request.approved_by %}
+                  {{ request.approved_by.get_full_name|default:request.approved_by.username }}
+                {% else %}
+                  -
+                {% endif %}
+              </td>
+              <td>
+                <button class="view-btns" onclick="viewApplication({{ request.id }})" title="View Details">
+                    <img src="{% static 'Pictures/icons/eye.png' %}" class="icon-img-large" alt="View">
+                </button>
+
+                {% if request.archived %}
+                <button class="restore-btn" onclick="restoreApplication({{ request.id }})" title="Restore">
+                    <img src="{% static 'Pictures/icons/restore.png' %}" class="icon-img-large" alt="Restore">
+                </button>
+                {% else %}
+                <button class="save-btn" onclick="saveChanges({{ request.id }})" title="Save">
+                    <img src="{% static 'Pictures/icons/check.png' %}" class="icon-img-large" alt="Save">
+                </button>
+
+                <button class="archive-btn" onclick="archiveApplication({{ request.id }})" title="Archive">
+                    <img src="{% static 'Pictures/icons/archived.png' %}" class="icon-img-large" alt="Archive">
+                </button>
+                {% endif %}
+            </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; color: #666;">No applications found</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Details Modal -->
+  <div id="applicationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Application Details</h3>
+        <span class="close" onclick="closeApplicationModal()">&times;</span>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Application details will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  
+
+  <script>
+    const currentUserName = "{{ user.get_full_name|default:user.username }}";
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateStats();
+      setupSearchAndFilter();
+      
+      // Load saved view preference
+      const savedView = localStorage.getItem('applicationView') || 'active';
+      switchView(savedView);
+    });
+
+    // Switch between Active and Archived views
+    function switchView(view) {
+      const activeBtn = document.getElementById('activeViewBtn');
+      const archivedBtn = document.getElementById('archivedViewBtn');
+      const rows = document.querySelectorAll('#applicationTable tbody tr[data-id]');
+      
+      if (view === 'active') {
+        activeBtn.classList.add('active');
+        archivedBtn.classList.remove('active');
+        
+        rows.forEach(row => {
+          const isArchived = row.getAttribute('data-archived') === 'true';
+          row.style.display = isArchived ? 'none' : '';
+        });
+      } else {
+        activeBtn.classList.remove('active');
+        archivedBtn.classList.add('active');
+        
+        rows.forEach(row => {
+          const isArchived = row.getAttribute('data-archived') === 'true';
+          row.style.display = isArchived ? '' : 'none';
+        });
+      }
+      
+      localStorage.setItem('applicationView', view);
+      updateStats();
+    }
+
+    function updateStats() {
+      const rows = document.querySelectorAll('#applicationTable tbody tr[data-id]');
+      let pending = 0, approved = 0, rejected = 0, processing = 0, activeTotal = 0;
+
+      rows.forEach(row => {
+        const isArchived = row.getAttribute('data-archived') === 'true';
+        if (!isArchived) {
+          activeTotal++;
+          const status = row.querySelector('.status-select').value;
+          if (status === 'pending') pending++;
+          else if (status === 'approved') approved++;
+          else if (status === 'rejected') rejected++;
+          else if (status === 'processing') processing++;
+        }
+      });
+
+      document.getElementById('pendingCount').textContent = pending;
+      document.getElementById('approvedCount').textContent = approved;
+      document.getElementById('rejectedCount').textContent = rejected;
+      document.getElementById('totalCount').textContent = activeTotal;
+    }
+
+    function setupSearchAndFilter() {
+      const searchInput = document.getElementById('searchInput');
+      const statusFilter = document.getElementById('statusFilter');
+
+      searchInput.addEventListener('input', filterTable);
+      statusFilter.addEventListener('change', filterTable);
+    }
+
+    function filterTable() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+      const rows = document.querySelectorAll('#applicationTable tbody tr[data-id]');
+      const currentView = document.getElementById('activeViewBtn').classList.contains('active') ? 'active' : 'archived';
+
+      rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const requestId = row.cells[1].textContent.toLowerCase();
+        const status = row.querySelector('.status-select').value;
+        const isArchived = row.getAttribute('data-archived') === 'true';
+
+        const matchesView = (currentView === 'active' && !isArchived) || (currentView === 'archived' && isArchived);
+        const matchesSearch = name.includes(searchTerm) || requestId.includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || status === statusFilter;
+
+        row.style.display = matchesView && matchesSearch && matchesStatus ? '' : 'none';
+      });
+    }
+
+    function viewApplication(id) {
+      const row = document.querySelector(`tr[data-id="${id}"]`);
+      if (!row) {
+        showErrorMessage('Application not found.');
+        return;
+      }
+
+      // Show loading state
+      const modalBody = document.getElementById('modalBody');
+      modalBody.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+          <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+          <p>Loading application details...</p>
+        </div>
+      `;
+      document.getElementById('applicationModal').style.display = 'block';
+
+      // Fetch full application details from server
+      fetch(`/api/eligibility-request/${id}/`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const app = data.request;
+            
+            // Build documents HTML
+            let documentsHTML = '<div class="documents-grid">';
+            
+            if (app.id_front) {
+              documentsHTML += `
+                <div class="document-item">
+                  <i class="fas fa-id-card document-icon" style="font-size: 32px; color: #1565C0; margin-bottom: 10px;"></i>
+                  <span class="document-name" style="font-weight: 500; margin-bottom: 10px;">ID Front</span>
+                  <a href="${app.id_front}" target="_blank" class="view-btn" style="text-decoration: none; font-size: 13px;">
+                     View
+                  </a>
+                </div>
+              `;
+            }
+            
+            if (app.id_back) {
+              documentsHTML += `
+                <div class="document-item">
+                  <i class="fas fa-id-card document-icon" style="font-size: 32px; color: #1565C0; margin-bottom: 10px;"></i>
+                  <span class="document-name" style="font-weight: 500; margin-bottom: 10px;">ID Back</span>
+                  <a href="${app.id_back}" target="_blank" class="view-btn" style="text-decoration: none; font-size: 13px;">
+                     View
+                  </a>
+                </div>
+              `;
+            }
+            
+            if (app.signature) {
+              documentsHTML += `
+                <div class="document-item">
+                  <i class="fas fa-signature document-icon" style="font-size: 32px; color: #1565C0; margin-bottom: 10px;"></i>
+                  <span class="document-name" style="font-weight: 500; margin-bottom: 10px;">Signature</span>
+                  <a href="${app.signature}" target="_blank" class="view-btn" style="text-decoration: none; font-size: 13px;">
+                     View
+                  </a>
+                </div>
+              `;
+            }
+            
+            if (!app.id_front && !app.id_back && !app.signature) {
+              documentsHTML += '<p class="no-documents">No documents uploaded</p>';
+            }
+            
+            documentsHTML += '</div>';
+
+            modalBody.innerHTML = `
+              <div class="application-details">
+                <h4>Request Information</h4>
+                <p><strong>Full Name:</strong> ${app.full_name}</p>
+                <p><strong>Request ID:</strong> 0${app.id}</p>
+                <p><strong>Email:</strong> ${app.email}</p>
+                <p><strong>Barangay:</strong> ${app.barangay}</p>
+                <p><strong>Position Type:</strong> ${app.position_type}</p>
+                <p><strong>Date Submitted:</strong> ${app.date_submitted}</p>
+                <p><strong>Requested Certifier:</strong> ${app.certifier}</p>
+                <p><strong>Current Status:</strong> <span class="status-${app.status}">${app.status.charAt(0).toUpperCase() + app.status.slice(1)}</span></p>
+                <p><strong>Approved by:</strong> ${app.approved_by}</p>
+                ${app.date_processed !== 'N/A' ? `<p><strong>Date Processed:</strong> ${app.date_processed}</p>` : ''}
+                ${app.rejection_reason ? `<p><strong>Rejection Reason:</strong> <span style="color: var(--danger);">${app.rejection_reason}</span></p>` : ''}
+                <h4>Documents</h4>
+                ${documentsHTML}
+                
+                
+              </div>
+            `;
+          } else {
+            showErrorMessage('Failed to load application details.');
+            closeApplicationModal();
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showErrorMessage('An error occurred while loading application details.');
+          closeApplicationModal();
+        });
+    }
+
+    // ✅ Move these OUTSIDE the viewApplication function
+    function closeApplicationModal() {
+      document.getElementById('applicationModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('applicationModal');
+      if (event.target == modal) {
+        closeApplicationModal();
+      }
+    }
+    
+    
+    function saveChanges(rowId) {
+  const row = document.querySelector(`tr[data-id="${rowId}"]`);
+  const statusSelect = row.querySelector('.status-select');
+  const approvedByCell = row.querySelector('.approved-by');
+  
+  const newStatus = statusSelect.value;
+  const originalStatus = statusSelect.dataset.original;
+  
+  // If changing to rejected, show custom prompt dialog
+  if (newStatus === 'rejected' && originalStatus !== 'rejected') {
+    showCustomPrompt({
+      icon: '❌',
+      iconGradient: 'linear-gradient(135deg, #ff7675 0%, #d63031 100%)',
+      title: 'Rejection Reason',
+      message: 'Please provide a reason for rejection:',
+      placeholder: 'Enter your reason here...',
+      confirmText: 'Submit',
+      confirmClass: 'custom-confirm-btn-danger',
+      onConfirm: (reason) => {
+        if (reason.trim()) {
+          saveStatusWithReason(rowId, newStatus, reason, statusSelect, approvedByCell, originalStatus);
+        } else {
+          statusSelect.value = originalStatus;
+          showErrorMessage('Rejection reason is required. Status not changed.');
+        }
+      },
+      onCancel: () => {
+        statusSelect.value = originalStatus;
+      }
+    });
+  } else {
+    saveStatusWithReason(rowId, newStatus, null, statusSelect, approvedByCell, originalStatus);
+  }
+}
+function showCustomPrompt({ icon, iconGradient, title, message, placeholder, confirmText, confirmClass, onConfirm, onCancel }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-confirm-overlay';
+  
+  const dialog = document.createElement('div');
+  dialog.className = 'custom-confirm-dialog';
+  
+  dialog.innerHTML = `
+    <div class="custom-confirm-header">
+      <div class="custom-confirm-icon" style="background: ${iconGradient};">${icon}</div>
+      <h3 class="custom-confirm-title">${title}</h3>
+    </div>
+    <div class="custom-confirm-body">
+      <p class="custom-confirm-message" style="margin-bottom: 16px;">${message}</p>
+      <textarea 
+        id="customPromptInput" 
+        class="custom-prompt-input" 
+        placeholder="${placeholder}"
+        rows="4"
+      ></textarea>
+    </div>
+    <div class="custom-confirm-footer">
+      <button class="custom-confirm-btn custom-confirm-btn-cancel">Cancel</button>
+      <button class="custom-confirm-btn ${confirmClass}">${confirmText}</button>
+    </div>
+  `;
+  
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  
+  const input = document.getElementById('customPromptInput');
+  const cancelBtn = dialog.querySelector('.custom-confirm-btn-cancel');
+  const confirmBtn = dialog.querySelector(`.${confirmClass}`);
+  
+  setTimeout(() => input.focus(), 100);
+  
+  cancelBtn.onclick = () => {
+    if (onCancel) onCancel();
+    closeCustomConfirm(overlay);
+  };
+  
+  confirmBtn.onclick = () => {
+    const value = input.value.trim();
+    if (value) {
+      onConfirm(value);
+      closeCustomConfirm(overlay);
+    } else {
+      input.style.borderColor = '#dc3545';
+      input.focus();
+    }
+  };
+  
+  // Allow Enter key with Ctrl/Cmd to submit
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      confirmBtn.click();
+    }
+  });
+  
+  overlay.onclick = (e) => {
+    if (e.target === overlay) {
+      if (onCancel) onCancel();
+      closeCustomConfirm(overlay);
+    }
+  };
+}
+    // ✅ New helper function to handle the actual save
+    function saveStatusWithReason(rowId, newStatus, reason, statusSelect, approvedByCell, originalStatus) {
+      const requestData = {
+        id: rowId,
+        status: newStatus
+      };
+      
+      // Add rejection reason if provided
+      if (reason) {
+        requestData.rejection_reason = reason;
+      }
+      
+      fetch("{% url 'update_application_status' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify(requestData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          statusSelect.dataset.original = newStatus;
+          
+          if (newStatus === 'approved' || newStatus === 'rejected') {
+            approvedByCell.textContent = data.approved_by || currentUserName;
+          } else if (newStatus === 'pending') {
+            approvedByCell.textContent = '-';
+          }
+          
+          updateStats();
+          
+          // Show success message with reason if rejected
+          if (newStatus === 'rejected' && reason) {
+            showSuccessMessage(`Status updated to Rejected. Reason: ${reason}`);
+          } else {
+            showSuccessMessage(data.message || 'Status updated successfully!');
+          }
+        } else {
+          statusSelect.value = originalStatus;
+          showErrorMessage(data.error || 'Failed to update status.');
+        }
+      })
+      .catch(error => {
+        statusSelect.value = originalStatus;
+        showErrorMessage('An error occurred. Please try again.');
+        console.error('Error:', error);
+      });
+    }
+    
+   function archiveApplication(id) {
+  showCustomConfirm({
+    icon: '📦',
+    title: 'Archive Application',
+    message: 'Are you sure you want to archive this application? You can restore it later from the archived section.',
+    confirmText: 'Archive',
+    confirmClass: 'custom-confirm-btn-confirm',
+    onConfirm: () => {
+      // Your existing archive logic here
+      fetch(`/api/applications/archive/${id}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ archived: true })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showSuccessMessage('Application archived successfully!');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showErrorMessage(data.error || 'Failed to archive application.');
+        }
+      })
+      .catch(error => {
+        showErrorMessage('An error occurred. Please try again.');
+        console.error('Error:', error);
+      });
+    }
+  });
+}
+
+function restoreApplication(id) {
+  showCustomConfirm({
+    icon: '↩️',
+    title: 'Restore Application',
+    message: 'Are you sure you want to restore this application? It will be moved back to the active applications.',
+    confirmText: 'Restore',
+    confirmClass: 'custom-confirm-btn-confirm',
+    onConfirm: () => {
+      // Your existing restore logic here
+      fetch(`/api/applications/restore/${id}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ archived: false })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showSuccessMessage('Application restored successfully!');
+          setTimeout(() => location.reload(), 1000);
+        } else {
+          showErrorMessage(data.error || 'Failed to restore application.');
+        }
+      })
+      .catch(error => {
+        showErrorMessage('An error occurred. Please try again.');
+        console.error('Error:', error);
+      });
+    }
+  });
+}
+
+// Add this helper function to your script
+function showCustomConfirm({ icon, title, message, confirmText, confirmClass, onConfirm }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'custom-confirm-overlay';
+  
+  const dialog = document.createElement('div');
+  dialog.className = 'custom-confirm-dialog';
+  
+  dialog.innerHTML = `
+    <div class="custom-confirm-header">
+      <div class="custom-confirm-icon">${icon}</div>
+      <h3 class="custom-confirm-title">${title}</h3>
+    </div>
+    <div class="custom-confirm-body">
+      <p class="custom-confirm-message">${message}</p>
+    </div>
+    <div class="custom-confirm-footer">
+      <button class="custom-confirm-btn custom-confirm-btn-cancel">Cancel</button>
+      <button class="custom-confirm-btn ${confirmClass}">${confirmText}</button>
+    </div>
+  `;
+  
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  
+  const cancelBtn = dialog.querySelector('.custom-confirm-btn-cancel');
+  const confirmBtn = dialog.querySelector(`.${confirmClass}`);
+  
+  cancelBtn.onclick = () => closeCustomConfirm(overlay);
+  confirmBtn.onclick = () => {
+    onConfirm();
+    closeCustomConfirm(overlay);
+  };
+  
+  overlay.onclick = (e) => {
+    if (e.target === overlay) closeCustomConfirm(overlay);
+  };
+}
+
+function closeCustomConfirm(overlay) {
+  overlay.style.animation = 'fadeOut 0.2s ease forwards';
+  setTimeout(() => overlay.remove(), 200);
+}
+    // Show success message
+    function showSuccessMessage(message) {
+      const existing = document.querySelector('.success-message');
+      if (existing) existing.remove();
+      
+      const messageEl = document.createElement('div');
+      messageEl.className = 'success-message';
+      messageEl.textContent = message;
+      messageEl.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #28a745, #20c997);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        z-index: 10001;
+        opacity: 0;
+        transform: translateX(100px);
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(40, 167, 69, 0.3);
+      `;
+      document.body.appendChild(messageEl);
+      
+      setTimeout(() => {
+        messageEl.style.opacity = '1';
+        messageEl.style.transform = 'translateX(0)';
+      }, 100);
+      
+      setTimeout(() => {
+        messageEl.style.opacity = '0';
+        messageEl.style.transform = 'translateX(100px)';
+        setTimeout(() => messageEl.remove(), 300);
+      }, 3000);
+    }
+    
+    // Show error message
+    function showErrorMessage(message) {
+      const existing = document.querySelector('.error-message');
+      if (existing) existing.remove();
+      
+      const messageEl = document.createElement('div');
+      messageEl.className = 'error-message';
+      messageEl.textContent = message;
+      messageEl.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(45deg, #dc3545, #c82333);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        z-index: 10001;
+        opacity: 0;
+        transform: translateX(100px);
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 8px 24px rgba(220, 53, 69, 0.3);
+      `;
+      document.body.appendChild(messageEl);
+      
+      setTimeout(() => {
+        messageEl.style.opacity = '1';
+        messageEl.style.transform = 'translateX(0)';
+      }, 100);
+      
+      setTimeout(() => {
+        messageEl.style.opacity = '0';
+        messageEl.style.transform = 'translateX(100px)';
+        setTimeout(() => messageEl.remove(), 300);
+      }, 3000);
+    }
+    
+    // Get CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+  
+</body>
+</html>

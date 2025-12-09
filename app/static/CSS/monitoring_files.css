@@ -1,0 +1,272 @@
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  body{
+    height: 100vh;
+  }
+  .profile-card {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 220px;
+    text-align: center;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.05);
+  }
+  
+  .folder-icon {
+    font-size: 40px;
+    margin-bottom: 15px;
+    color: #2456f3;
+  }
+  
+  .profile-card h3 {
+    margin: 10px 0 5px;
+    font-size: 16px;
+    color: #0b1a50;
+  }
+
+  .back-button {
+  background-color: #2456f3;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.back-button:hover {
+  background-color: #3b5cff;
+}
+  
+  .profile-card p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .edit-button {
+    margin-top: 10px;
+    background-color: #2456f3;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .edit-button:hover {
+    background-color: #1c45c0;
+  }
+
+  .nav-menu li a {
+    text-decoration: none;
+    color: #1d1d1d;
+    display: block;
+    padding: 10px;
+    border-radius: 10px;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.buttons-left {
+  display: flex;
+  gap: 15px;
+}
+
+.create-button, .upload-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.create-button {
+  background-color: #2456f3;
+  color: white;
+}
+
+.create-button:hover {
+  background-color: #3b5cff;
+}
+
+.upload-button {
+  background-color: #2456f3;
+  color: white;
+}
+
+.upload-button:hover {
+  background-color: #5b4bd6;
+}
+
+/* Search Bar Container */
+.search-container {
+  top: 60px;
+  right: 0;
+  z-index: 10;
+}
+
+.search-bar {
+  padding: 10px 15px;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  width: 300px;
+  font-size: 14px;
+  background-color: white;
+  outline: none;
+}
+
+.search-bar::placeholder {
+  color: #8b95a7;
+}
+
+.search-bar:focus {
+  border-color: #4c6fff;
+  box-shadow: 0 0 0 3px rgba(76, 111, 255, 0.1);
+}
+
+/* Card Grid - Updated */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 20px;
+}
+
+/* Profile Card - Updated */
+.profile-card {
+  background: white;
+  border: 1px solid #e8ecf0;
+  border-radius: 12px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.profile-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Folder Icon - Updated */
+.folder-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+}
+
+/* Profile Card Text - Updated */
+.profile-card h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.profile-card p {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+
+/*ICONS ARE ALL HERE*/
+.folder-icon i {
+  color: black;
+  font-size: 45px;
+}
+
+.upload-button {
+  color: white;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.upload-button i {
+  color: white;
+}
+
+.create-button {
+  color: white;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.create-button i {
+  color: white;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-container {
+    position: static;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar {
+    width: 100%;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}

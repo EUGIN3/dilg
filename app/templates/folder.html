@@ -1,0 +1,924 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DILG Folder Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'CSS/dashboard.css' %}">
+  <style>
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8f9fa;
+      --bg-tertiary: #e9ecef;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --text-muted: #868e96;
+      --border-color: #dee2e6;
+      --shadow: 0 2px 4px rgba(0,0,0,0.1);
+      --shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
+      --accent-primary: #007bff;
+      --accent-hover: #0056b3;
+      --success: #28a745;
+      --success-hover: #218838;
+      --warning: #ffc107;
+      --danger: #dc3545;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      overflow-x: hidden;
+    }
+
+    /* Main Layout */
+    .dashboard-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      color: #0b1a50;
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar .logo {
+      width: 140px;
+      margin: 24px auto;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .sidebar .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .menu-title {
+      padding: 16px 24px;
+      font-weight: 600;
+      color: rgba(11, 26, 80, 0.7);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 32px 40px;
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      color: #0b1a50;
+
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .back-button {
+      padding: 10px 20px;
+      background: var(--accent-primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+
+    /* Action Buttons Section */
+    .action-buttons {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 16px;
+    }
+
+    .buttons-left {
+      display: flex;
+      gap: 12px;
+    }
+
+    .create-button,
+    .upload-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .create-button {
+      background: var(--accent-primary);
+      color: white;
+    }
+
+    .create-button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .upload-button {
+      background: var(--success);
+      color: white;
+    }
+
+    .upload-button:hover {
+      background: var(--success-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .search-container {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 12px 16px 12px 44px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow);
+    }
+
+    .search-bar:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .search-container::before {
+      content: '\f002';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-content {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 540px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: slideUp 0.3s ease;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 28px 32px;
+      border-bottom: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-header h2 i {
+      color: var(--accent-primary);
+      font-size: 1.75rem;
+    }
+
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+
+    .close-modal:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      transform: rotate(90deg);
+    }
+
+    .modal-body {
+      padding: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent-primary);
+      background: var(--bg-primary);
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .modal-footer {
+      padding: 20px 32px;
+      border-top: 2px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      background: var(--bg-secondary);
+    }
+
+    .btn-cancel,
+    .btn-create {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-cancel {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      border: 2px solid var(--border-color);
+    }
+
+    .btn-cancel:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+
+    .btn-create {
+      background: var(--accent-primary);
+      color: white;
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .btn-create:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+    }
+
+    .btn-create:active {
+      transform: translateY(0);
+    }
+
+    /* Folder Cards Grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .profile-card {
+      background: var(--bg-primary);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--success));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .profile-card:hover::before {
+      opacity: 1;
+    }
+
+    .folder-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #667eea 0%, #0b1a50 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-card:hover .folder-icon {
+      transform: scale(1.1);
+    }
+
+    .folder-icon i {
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    .profile-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .profile-card p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 20px;
+      flex-grow: 1;
+    }
+
+    .edit-button {
+      padding: 10px 24px;
+      background: var(--accent-primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .edit-button:hover {
+      background: var(--accent-hover);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    .edit-button::after {
+      content: '\f054';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      font-size: 0.75rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--text-secondary);
+    }
+
+    /* Red notification dot */
+.red-dot {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #dc3545;
+  border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-50%) scale(1.2);
+  }
+}
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+
+      .main-content {
+        margin-left: 200px;
+        padding: 20px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .buttons-left {
+        width: 100%;
+      }
+
+      .search-container {
+        width: 100%;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        width: 95%;
+        margin: 20px;
+      }
+
+      .modal-header {
+        padding: 20px;
+      }
+
+      .modal-body {
+        padding: 20px;
+      }
+
+      .modal-footer {
+        padding: 16px 20px;
+        flex-direction: column;
+      }
+
+      .btn-cancel,
+      .btn-create {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sidebar {
+        width: 70px;
+      }
+
+      .sidebar .logo {
+        width: 50px;
+      }
+
+      .menu-title {
+        display: none;
+      }
+
+      .nav-menu a span {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 70px;
+        padding: 16px;
+      }
+    }
+
+    /* Card Loading Animation */
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .profile-card {
+      animation: cardFadeIn 0.5s ease forwards;
+    }
+
+    .profile-card:nth-child(1) { animation-delay: 0.1s; }
+    .profile-card:nth-child(2) { animation-delay: 0.2s; }
+    .profile-card:nth-child(3) { animation-delay: 0.3s; }
+    .profile-card:nth-child(4) { animation-delay: 0.4s; }
+    .profile-card:nth-child(5) { animation-delay: 0.5s; }
+    .profile-card:nth-child(6) { animation-delay: 0.6s; }
+    
+  </style>
+</head>
+<body>
+ <div class="dashboard-container">
+    <!-- Sidebar -->
+<div class="sidebar">
+  <a href="{% url 'landing_menu' %}">
+    <img src="{% static 'Pictures/logo1.png' %}" alt="DILG Logo" class="logo">
+  </a>
+  <div class="menu-title">Navigation</div>
+  <ul class="nav-menu">
+    <li>
+      <a href="{% url 'dashboard' %}">
+         Dashboard
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'application_request' %}" style="position: relative;" >
+         Application Request
+        {% if pending_applications_count > 0 %}
+        <span class="red-dot"></span>
+        {% endif %}
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'pending_users' %}" style="position: relative;">
+         User Approvals
+        {% if pending_count > 0 %}
+        <span class="red-dot"></span>
+        {% endif %}
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'employees_profile' %}">
+         Employees Profile
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'folder' %}" style="position: relative;"class="active">
+         Folders
+        {% if monitoring_count > 0 or certification_count > 0 %}
+        <span class="red-dot"></span>
+        {% endif %}
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'settings' %}">
+         Settings
+      </a>
+    </li>
+  </ul>
+</div>
+
+    <div class="main-content">
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <i class="fas fa-folder-open"></i>
+          Folder Management
+        </h1>
+        <a href="/dashboard/" class="back-button">
+          <i class="fas fa-arrow-left"></i>
+          Back to Dashboard
+        </a>
+      </div>
+      
+      <!-- Action Buttons with Search -->
+      <div class="action-buttons">
+        <div class="buttons-left">
+          <button class="create-button" id="createFolderBtn">
+            <i class="fas fa-plus"></i>
+            Create Folder
+          </button>
+        </div>
+        <div class="search-container">
+          <input type="text" class="search-bar" placeholder="Search folders...">
+        </div>
+      </div>
+      
+      <!-- Create Folder Modal -->
+      <div class="modal" id="createFolderModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2><i class="fas fa-folder-plus"></i> Create New Folder</h2>
+            <button class="close-modal" id="closeModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="folderName">Folder Name <span style="color: var(--danger);">*</span></label>
+              <input type="text" id="folderName" placeholder="Enter folder name..." required>
+            </div>
+            <div class="form-group">
+              <label for="folderDescription">Description</label>
+              <textarea id="folderDescription" placeholder="Enter folder description (optional)..." rows="4"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" id="cancelBtn">
+              <i class="fas fa-times"></i>
+              Cancel
+            </button>
+            <button class="btn-create" id="submitFolderBtn">
+              <i class="fas fa-check"></i>
+              Create Folder
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Folder Cards -->
+      <div class="card-grid">
+        {% for folder in folders %}
+        <div class="profile-card">
+          <div class="folder-icon"><i class="fas fa-folder"></i></div>
+          <h3>{{ folder.name }}</h3>
+          <p>{{ folder.description }}</p>
+          <a href="#" class="edit-button">Open</a>
+        </div>
+        {% endfor %}
+        
+        <div class="profile-card">
+  <div class="folder-icon"><i class="fas fa-folder"></i></div>
+  <h3 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    Brgy. Monitoring Files
+    {% if monitoring_count > 0 %}
+    <span style="background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">
+      {{ monitoring_count }}
+    </span>
+    {% endif %}
+  </h3>
+  <p>Requirements and monitoring documents</p>
+  <a href="/monitoring_filess/" class="edit-button">Open</a>
+</div>
+
+<div class="profile-card">
+  <div class="folder-icon"><i class="fas fa-folder"></i></div>
+  <h3 style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+    Certification Files
+    {% if certification_count > 0 %}
+    <span style="background: #dc3545; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;">
+      {{ certification_count }}
+    </span>
+    {% endif %}
+  </h3>
+  <p>Official certification documents</p>
+  <a href="/certification_filess/" class="edit-button">Open</a>
+</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('createFolderModal');
+      const createBtn = document.getElementById('createFolderBtn');
+      const closeBtn = document.getElementById('closeModal');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const submitBtn = document.getElementById('submitFolderBtn');
+      const folderNameInput = document.getElementById('folderName');
+      const folderDescInput = document.getElementById('folderDescription');
+
+      // Open modal
+      if (createBtn) {
+        createBtn.addEventListener('click', function() {
+          modal.classList.add('active');
+          folderNameInput.focus();
+        });
+      }
+
+      // Close modal functions
+      function closeModal() {
+        modal.classList.remove('active');
+        folderNameInput.value = '';
+        folderDescInput.value = '';
+      }
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeModal);
+      }
+
+      // Close on background click
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeModal();
+        }
+      });
+
+      // Close on ESC key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+          closeModal();
+        }
+      });
+
+      // Submit form
+      if (submitBtn) {
+        submitBtn.addEventListener('click', function() {
+          const folderName = folderNameInput.value.trim();
+          
+          if (!folderName) {
+            alert('Please enter a folder name');
+            folderNameInput.focus();
+            return;
+          }
+
+          // Here you would typically send the data to your backend
+          console.log('Creating folder:', {
+            name: folderName,
+            description: folderDescInput.value.trim()
+          });
+
+          // For now, just close the modal
+          closeModal();
+          
+          // You can add a success notification here
+          alert('Folder created successfully!');
+        });
+      }
+
+      // Search functionality
+      const searchBar = document.querySelector('.search-bar');
+      if (searchBar) {
+        searchBar.addEventListener('input', function(e) {
+          const searchTerm = e.target.value.toLowerCase();
+          const cards = document.querySelectorAll('.profile-card');
+          
+          cards.forEach(card => {
+            const title = card.querySelector('h3')?.textContent.toLowerCase() || '';
+            const description = card.querySelector('p')?.textContent.toLowerCase() || '';
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+              card.style.display = '';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

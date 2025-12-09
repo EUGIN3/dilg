@@ -1,0 +1,3103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DILG Admin - Requirements Management</title>
+  <link rel="stylesheet" href="{% static 'CSS/dashboard.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100vh;
+      height: 100vh;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .main-container {
+      display: flex;
+      gap: 0;
+      width: 100%;
+      height: 100vh;
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      color: #0b1a50;
+    }
+
+    .sidebar {
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      color: #0b1a50;
+      width: 220px;
+      padding: 20px;
+      border-right: 1px solid #ccc;
+      border-radius: 0 30px 30px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    .nav-section h3 {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-item {
+      padding: 12px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+      color: #4b5563;
+      font-weight: 500;
+    }
+
+    .nav-item:hover {
+      background: #f3f4f6;
+    }
+
+    .nav-item.active {
+      background: #2456f3;
+      color: white;
+      font-weight: 600;
+    }
+
+    .content-area {
+      flex: 1;
+      background: white;
+      border-radius: 0;
+      padding: 20px 40px;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100vh;
+      background: linear-gradient(to bottom, #f5f6fa, #0b1a50);
+      color: #0b1a50;
+    }
+
+    .content-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .content-header h1 {
+      font-size: 28px;
+      color: #1a202c;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #2456f3;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .icon-btn:hover {
+      background: #4338ca;
+      transform: scale(1.05);
+    }
+
+    .back-btn {
+      background: #2456f3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #4338ca;
+      transform: translateX(-2px);
+    }
+
+    .add-requirement-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .add-requirement-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 25px;
+    }
+
+    .search-input {
+      width: 40%;
+      padding: 12px 16px 12px 45px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #2456f3;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      font-size: 16px;
+    }
+
+    .view-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+
+    .view-tab {
+      padding: 12px 24px;
+      background: #f3f4f6;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      transition: all 0.2s;
+    }
+
+    .view-tab:hover {
+      background: #e5e7eb;
+    }
+
+    .view-tab.active {
+      background: #2456f3;
+      color: white;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .filter-group label {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .filter-group select,
+    .filter-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+      outline: none;
+      border-color: #2456f3;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .submissions-container {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+      max-height: calc(100vh - 300px); /* Changed from 400px to 300px */
+      min-height: 400px; /* ADD THIS to ensure minimum height */
+    }
+
+    .submissions-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .submissions-container::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+
+    .submission-card {
+      background: #fafafa;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 15px;
+      transition: all 0.2s;
+    }
+
+    .submission-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .submission-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+
+    .submission-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a202c;
+      margin-bottom: 5px;
+    }
+
+    .submission-barangay {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .status-badge {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .status-badge.accomplished {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-badge.approved {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-badge.rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .submission-info {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      padding: 15px 0;
+      border-top: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
+      margin: 15px 0;
+    }
+
+    .info-item {
+      font-size: 13px;
+    }
+
+    .info-label {
+      color: #6b7280;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .info-value {
+      color: #1a202c;
+      font-weight: 600;
+    }
+
+    .submission-update {
+      background: #f9fafb;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 14px;
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .attachments {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+
+    .attachment-badge {
+      background: #e5e7eb;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #1a202c;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .attachment-badge:hover {
+      background: #d1d5db;
+      transform: scale(1.05);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-approve {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-approve:hover {
+      background: #059669;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+
+    .btn-cancel {
+      background: #e5e7eb;
+      color: #1a202c;
+    }
+
+    .btn-cancel:hover {
+      background: #d1d5db;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #6b7280;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f4f6;
+      border-top: 3px solid #2456f3;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 22px;
+      color: #1a202c;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #6b7280;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      color: #1a202c;
+    }
+
+    .modal-body label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1a202c;
+      font-size: 14px;
+    }
+
+    .modal-body input,
+    .modal-body select,
+    .modal-body textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .modal-body textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .modal-body input:focus,
+    .modal-body select:focus,
+    .modal-body textarea:focus {
+      outline: none;
+      border-color: #2456f3;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1a202c;
+      color: white;
+      padding: 16px 24px;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      display: none;
+      z-index: 2000;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success {
+      background: #10b981;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      min-width: 20px;
+      height: 20px;
+      font-size: 11px;
+      font-weight: bold;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 6px;
+      animation: pulse 2s infinite;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 2px 12px rgba(239, 68, 68, 0.6);
+      }
+    }
+
+    .admin-notification-dropdown {
+      position: fixed;
+      top: 100px;
+      right: 100px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      border: 1px solid #e5e7eb;
+      width: 420px;
+      max-height: 550px;
+      display: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .admin-notification-dropdown.show {
+      display: block;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .notification-header {
+      padding: 18px 20px;
+      border-bottom: 2px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+    }
+
+    .notification-header h3 {
+      font-size: 18px;
+      color: #1a202c;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .mark-all-read {
+      background: none;
+      border: none;
+      color: #2456f3;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      font-weight: 600;
+    }
+
+    .mark-all-read:hover {
+      background: #e5e7eb;
+    }
+
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .notification-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .notification-list::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+
+    .notification-empty {
+      padding: 60px 20px;
+      text-align: center;
+      color: #9ca3af;
+      background: white;
+    }
+
+    .notification-empty-icon {
+      font-size: 64px;
+      margin-bottom: 15px;
+      opacity: 0.6;
+    }
+
+    .notification-empty p {
+      font-size: 16px;
+      color: #6b7280;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .notification-item {
+      padding: 15px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .notification-item:hover {
+      background: #f9fafb;
+    }
+
+    .notification-item.unread {
+      background: #eff6ff;
+    }
+
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .notification-icon.info {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      color: #1a202c;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .notification-message {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .notification-time {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+    /* Announcement Card Styles */
+.announcement-card {
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px 20px; /* Reduced from 20px */
+  margin-bottom: 12px; /* Reduced from 15px */
+  transition: all 0.2s;
+  border-left: 4px solid transparent;
+}
+
+.announcement-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.announcement-card.priority-high {
+  border-left-color: #ef4444;
+}
+
+.announcement-card.priority-medium {
+  border-left-color: #f59e0b;
+}
+
+.announcement-card.priority-low {
+  border-left-color: #3b82f6;
+}
+
+.announcement-title {
+  font-size: 17px; /* Slightly reduced from 18px */
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 8px; /* Reduced from 10px */
+}
+
+.announcement-content {
+  color: #4b5563;
+  line-height: 1.5; /* Reduced from 1.6 */
+  margin-bottom: 12px; /* Reduced from 15px */
+  font-size: 14px;
+}
+
+.announcement-meta {
+  display: flex;
+  gap: 15px; /* Reduced from 20px */
+  padding-top: 12px; /* Reduced from 15px */
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px; /* Reduced from 13px */
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.priority-badge-announcement {
+  padding: 5px 10px; /* Reduced from 6px 12px */
+  border-radius: 6px;
+  font-size: 10px; /* Reduced from 11px */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  margin-bottom: 8px; /* Reduced from 10px */
+}
+/* Optimize action buttons */
+.announcement-card .actions {
+  margin-top: 12px; /* Reduced from 15px */
+}
+
+.announcement-card .actions .btn {
+  padding: 8px 16px; /* Reduced from 10px 20px */
+  font-size: 12px; /* Reduced from 13px */
+}
+
+.priority-badge-announcement.high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.priority-badge-announcement.medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.priority-badge-announcement.low {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* ========== ENHANCED CALENDAR STYLES - ADD THIS ========== */
+
+/* ========== ENHANCED CALENDAR STYLES ========== */
+
+.calendar-wrapper {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  height: calc(100vh - 160px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.calendar-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 15px 20px;
+  background: linear-gradient(135deg,#0056b3 0%, #0b1a50 100%);
+  border-radius: 12px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.calendar-controls button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.calendar-controls button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+#calendarMonthYear {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+#calendarGrid {
+  background: white;
+  border-radius: 12px;
+  padding: 15px;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: auto repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  color:#0056b3;
+  padding: 10px 8px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ebf2 100%);
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.calendar-day {
+  min-height: 0;
+  max-height: none;
+  height: 100%;
+  padding: 10px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.calendar-day::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg,  #0056b3 0%,  #0b1a50 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.calendar-day:hover {
+  border-color: #0056b3;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  transform: translateY(-5px);
+  background: white;
+}
+
+.calendar-day:hover::before {
+  opacity: 1;
+}
+
+.calendar-day.other-month {
+  background: #fafafa;
+  opacity: 0.4;
+  border-color: #f3f4f6;
+}
+
+.calendar-day.other-month:hover {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.calendar-day.today {
+  border: 3px solid  #0056b3;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+}
+
+.calendar-day.today::before {
+  opacity: 1;
+  height: 4px;
+}
+
+.calendar-day-number {
+  font-weight: 700;
+  font-size: 16px;
+  color: #1a202c;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.calendar-day:hover .calendar-day-number {
+  color: #0056b3;
+  transform: scale(1.1);
+}
+
+.calendar-day.today .calendar-day-number {
+  color: #0056b3;
+  font-size: 18px;
+}
+
+.calendar-requirement {
+  font-size: 9px;
+  padding: 3px 6px;
+  margin-bottom: 3px;
+  border-radius: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-requirement:hover {
+  transform: translateX(3px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-requirement.pending {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #991b1b;
+  border-left: 3px solid #ef4444;
+}
+
+.calendar-requirement.in-progress {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  color: #92400e;
+  border-left: 3px solid #f59e0b;
+}
+
+.calendar-requirement.accomplished {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  color: #065f46;
+  border-left: 3px solid #10b981;
+}
+
+.calendar-requirement.approved {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  color: #1e40af;
+  border-left: 3px solid #3b82f6;
+}
+
+.calendar-day-more {
+  font-size: 9px;
+  color: #0056b3;
+  margin-top: auto;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+.calendar-day:hover .calendar-day-more {
+  background: linear-gradient(135deg,  #0056b3 0%,  #0b1a50 100%);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Day Details Modal Enhancement */
+.day-requirement-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-requirement-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg,  #0056b3 0%,  #0b1a50 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.day-requirement-card:hover {
+  background: white;
+  border-color: #667eea;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
+  transform: translateX(8px);
+}
+
+.day-requirement-card:hover::before {
+  opacity: 1;
+}
+
+.day-requirement-info {
+  flex: 1;
+}
+
+.day-requirement-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+
+.day-requirement-card:hover .day-requirement-title {
+  color: #667eea;
+}
+
+.day-requirement-barangay {
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .calendar-day {
+    min-height: 100px;
+    max-height: 100px;
+  }
+  
+  .calendar-day-number {
+    font-size: 16px;
+  }
+  
+  .calendar-requirement {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .calendar-controls {
+    padding: 15px;
+  }
+  
+  #calendarMonthYear {
+    font-size: 22px;
+  }
+  
+  .calendar-day {
+    min-height: 90px;
+    max-height: 90px;
+    padding: 8px;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="toast" id="toast"></div>
+
+  <!-- Review Modal -->
+  <div class="modal" id="reviewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Review Submission</h2>
+        <button class="close-btn" onclick="closeReviewModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="reviewNotes">Review Notes (Optional)</label>
+        <textarea id="reviewNotes" placeholder="Add any comments or feedback..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeReviewModal()">Cancel</button>
+        <button class="btn" id="confirmReviewBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Requirement Modal -->
+  <div class="modal" id="addRequirementModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Requirement</h2>
+        <button class="close-btn" onclick="closeAddRequirementModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="reqTitle">Title <span style="color: red;">*</span></label>
+        <input type="text" id="reqTitle" placeholder="Enter requirement title..." required>
+        
+        <label for="reqDescription">Description <span style="color: red;">*</span></label>
+        <textarea id="reqDescription" placeholder="Describe the requirement in detail..." required></textarea>
+        
+        <label for="reqPeriod">Period <span style="color: red;">*</span></label>
+        <select id="reqPeriod" required>
+          <option value="">Select period...</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="quarterly">Quarterly</option>
+          <option value="semestral">Semestral</option>
+          <option value="annually">Annually</option>
+        </select>
+
+        <label for="reqDueDate">Due Date <span style="color: red;">*</span></label>
+        <input type="date" id="reqDueDate" required>
+        
+        <label for="reqPriority">Priority <span style="color: red;">*</span></label>
+        <select id="reqPriority" required>
+          <option value="">Select priority...</option>
+          <option value="normal">Normal</option>
+          <option value="important">Important</option>
+          <option value="urgent">Urgent</option>
+        </select>
+        
+        <div style="margin-top: 15px; padding: 12px; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 6px;">
+          <small style="color: #1e40af; font-size: 12px;">
+            <i class="fa-solid fa-info-circle"></i> This requirement will be visible to all barangays and they will receive a notification.
+          </small>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeAddRequirementModal()">Cancel</button>
+        <button class="btn btn-approve" id="confirmAddRequirementBtn" onclick="confirmAddRequirement()">
+          <i class="fa-solid fa-plus"></i> Add Requirement
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcement Modal -->
+<div class="modal" id="announcementModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="announcementModalTitle">Create Announcement</h2>
+      <button class="close-btn" onclick="closeAnnouncementModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <label for="announcementTitle">Title <span style="color: red;">*</span></label>
+      <input type="text" id="announcementTitle" placeholder="Enter announcement title..." required>
+      
+      <label for="announcementContent">Content <span style="color: red;">*</span></label>
+      <textarea id="announcementContent" placeholder="Enter announcement details..." required style="min-height: 150px;"></textarea>
+      
+      <label for="announcementDate">Date <span style="color: red;">*</span></label>
+      <input type="date" id="announcementDate" required>
+      
+      <label for="announcementPriority">Priority <span style="color: red;">*</span></label>
+      <select id="announcementPriority" required>
+        <option value="low">Low - General Information</option>
+        <option value="medium" selected>Medium - Important Notice</option>
+        <option value="high">High - Urgent Action Required</option>
+      </select>
+      
+      <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 6px;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0;">
+          <input type="checkbox" id="sendNotification" checked style="width: 20px; height: 20px; cursor: pointer;">
+          <span style="color: #1e40af; font-size: 14px;">
+            <i class="fa-solid fa-bell"></i> Send notification to all barangays
+          </span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeAnnouncementModal()">Cancel</button>
+      <button class="btn btn-approve" id="submitAnnouncementBtn" onclick="submitAnnouncement()">
+        <i class="fa-solid fa-paper-plane"></i> <span id="submitAnnouncementText">Create Announcement</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+  <!-- Delete Announcement Modal -->
+  <div class="modal" id="deleteAnnouncementModal">
+    <div class="modal-content" style="max-width: 450px;">
+      <div class="modal-header">
+        <h2>Confirm Delete</h2>
+        <button class="close-btn" onclick="closeDeleteAnnouncementModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+          Are you sure you want to delete this announcement? This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeDeleteAnnouncementModal()">Cancel</button>
+        <button class="btn btn-reject" onclick="confirmDeleteAnnouncement()">
+          <i class="fa-solid fa-trash"></i> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Day Details Modal -->
+  <div class="modal" id="dayDetailsModal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h2 id="dayDetailsTitle">Requirements</h2>
+        <button class="close-btn" onclick="closeDayDetailsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="dayDetailsContent" style="max-height: 400px; overflow-y: auto;">
+          <!-- Requirements will be loaded here -->
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeDayDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Dropdown -->
+  <div id="adminNotificationDropdown" class="admin-notification-dropdown">
+    <div class="notification-header">
+      <h3>Notifications</h3>
+      <button class="mark-all-read" onclick="markAllAdminNotificationsRead()">Mark all as read</button>
+    </div>
+    <div class="notification-list" id="adminNotificationList">
+      <div class="notification-empty">
+        <div class="notification-empty-icon">🔔</div>
+        <p>No notifications yet</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="logo-container">
+        <img src="{% static 'Pictures/logo1.png' %}" alt="DILG Logo" class="logo">
+      </div>
+      
+      <nav class="nav-section">
+        <h3>Menu</h3>
+        <ul class="nav-list">
+          <li class="nav-item active" id="requirementsMenuItem" onclick="switchView('submissions')">Requirements</li>
+          <li class="nav-item" id="announcementsMenuItem" onclick="switchView('announcements')">Announcements</li>
+          <li class="nav-item" id="calendarMenuItem" onclick="switchView('calendar')">Calendar</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <div class="content-header">
+        <h1 id="pageTitle">Requirements Monitoring</h1>
+        <div class="header-actions">
+          <button class="add-requirement-btn" id="mainActionBtn" onclick="openAddRequirementModal()">
+            Add Requirement
+          </button>
+          <button class="icon-btn" title="Notifications" onclick="toggleAdminNotifications()">
+            <img src="{% static 'Pictures/icons/bell.png' %}" 
+                  alt="bell icon" 
+                  style="width: 22px; height: 22px;">
+            <span id="adminNotificationBadge" class="notification-badge">0</span>
+          </button>
+          <button class="back-btn" onclick="window.location.href='{% url 'dashboard' %}'">← Back</button>
+        </div>
+      </div>
+
+      <div class="search-container">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" id="searchBox" placeholder="Search submissions..." onkeyup="loadSubmissions()">
+      </div>
+
+      <div class="view-tabs">
+        <button class="view-tab active" id="submissionsTab" onclick="switchView('submissions')">Review Submissions</button>
+        <button class="view-tab" id="requirementsTab" onclick="switchView('requirements')">Manage Requirements</button>
+        <button class="view-tab" id="announcementsTab" onclick="switchView('announcements')">Announcements</button>
+      </div>
+
+      <div id="submissionsView">
+        <div class="filters">
+          <div class="filter-group">
+            <label>Barangay</label>
+            <select id="filterBarangay" onchange="loadSubmissions()">
+              <option value="">All Barangays</option>
+              {% for barangay in barangays %}
+              <option value="{{ barangay.id }}">{{ barangay.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="filterStatus" onchange="loadSubmissions()">
+              <option value="">All Statuses</option>
+              <option value="accomplished" selected>Awaiting Review</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Period</label>
+            <select id="filterPeriod" onchange="loadSubmissions()">
+              <option value="">All Periods</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="semestral">Semestral</option>
+              <option value="annually">Annually</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Sort By</label>
+            <select id="filterSort" onchange="loadSubmissions()">
+              <option value="-submitted_at">Newest First</option>
+              <option value="submitted_at">Oldest First</option>
+              <option value="due_date">Due Date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="submissions-container" id="submissionsContainer">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading submissions...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="requirementsView" class="hidden">
+        <!-- Filters for requirements -->
+        <div class="filters" style="margin-bottom: 20px;">
+          <div class="filter-group">
+            <label>Period</label>
+            <select id="filterReqPeriod" onchange="loadRequirementsList()">
+              <option value="">All Periods</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="semestral">Semestral</option>
+              <option value="annually">Annually</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Priority</label>
+            <select id="filterReqPriority" onchange="loadRequirementsList()">
+              <option value="">All Priorities</option>
+              <option value="normal">Normal</option>
+              <option value="important">Important</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="filterReqStatus" onchange="loadRequirementsList()">
+              <option value="">All</option>
+              <option value="active" selected>Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Sort By</label>
+            <select id="filterReqSort" onchange="loadRequirementsList()">
+              <option value="-created_at">Newest First</option>
+              <option value="created_at">Oldest First</option>
+              <option value="title">Title A-Z</option>
+              <option value="-title">Title Z-A</option>
+              <option value="due_date">Due Date</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="submissions-container" id="requirementsContainer">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading requirements...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="calendarView" class="hidden">
+        <div class="calendar-wrapper">
+          <div class="calendar-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <button onclick="previousMonth()" class="btn btn-approve" style="background: #6b7280;">
+              <i class="fa-solid fa-chevron-left"></i> Previous
+            </button>
+            <h2 id="calendarMonthYear" style="font-size: 24px; font-weight: 700; color: #ecf2ff;">Loading...</h2>
+            <button onclick="nextMonth()" class="btn btn-approve" style="background: #6b7280;">
+              Next <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          
+          <div id="calendarGrid" style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: visible;">
+            <div class="loading">
+              <div class="spinner"></div>
+              <p>Loading calendar...</p>
+            </div>
+          </div>
+          
+          <div id="calendarLegend" style="display: none; margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+            <strong style="display: block; margin-bottom: 10px; color: #1a202c;">Legend:</strong>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 20px; background: #fee2e2; border-radius: 4px;"></div>
+                <span style="font-size: 13px; color: #4b5563;">Pending</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 20px; background: #fef3c7; border-radius: 4px;"></div>
+                <span style="font-size: 13px; color: #4b5563;">In Progress</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 20px; background: #d1fae5; border-radius: 4px;"></div>
+                <span style="font-size: 13px; color: #4b5563;">Accomplished</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 20px; background: #dbeafe; border-radius: 4px;"></div>
+                <span style="font-size: 13px; color: #4b5563;">Approved</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+
+       <div id="announcementsView" class="hidden">
+        <div class="submissions-container" id="announcementsContainer">
+          <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading announcements...</p>
+          </div>
+        </div>
+      </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ========== GLOBAL STATE ==========
+    let currentCalendarMonth = new Date().getMonth();
+    let currentCalendarYear = new Date().getFullYear();
+    let calendarRequirements = [];
+    let currentReviewId = null;
+    let currentReviewAction = null;
+    let currentView = 'submissions';
+    let currentAnnouncementId = null;
+    let deleteAnnouncementId = null;
+
+    // ========== INITIALIZE ON PAGE LOAD ==========
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 Admin Dashboard Initialized');
+      
+      loadSubmissions();
+      loadAdminNotifications();
+      
+      setInterval(() => {
+        if (currentView === 'submissions') {
+          loadSubmissions();
+        }
+        loadAdminNotifications();
+      }, 30000);
+    });
+
+    // ========== REQUIREMENT MODALS ==========
+    function openAddRequirementModal() {
+      const modal = document.getElementById('addRequirementModal');
+      document.getElementById('reqTitle').value = '';
+      document.getElementById('reqDescription').value = '';
+      document.getElementById('reqPeriod').value = '';
+      document.getElementById('reqPriority').value = '';
+      document.getElementById('reqDueDate').value = '';
+      modal.classList.add('show');
+    }
+
+    function closeAddRequirementModal() {
+      document.getElementById('addRequirementModal').classList.remove('show');
+    }
+
+    function confirmAddRequirement() {
+      const title = document.getElementById('reqTitle').value.trim();
+      const description = document.getElementById('reqDescription').value.trim();
+      const period = document.getElementById('reqPeriod').value;
+      const priority = document.getElementById('reqPriority').value;
+      const dueDate = document.getElementById('reqDueDate').value;
+      
+      if (!title) {
+        showToast('Please enter a title', 'error');
+        return;
+      }
+
+      if (!dueDate) {
+        showToast('Please select a due date', 'error');
+        return;
+      }
+          
+      if (!description) {
+        showToast('Please enter a description', 'error');
+        return;
+      }
+      
+      if (!period) {
+        showToast('Please select a period', 'error');
+        return;
+      }
+      
+      if (!priority) {
+        showToast('Please select a priority', 'error');
+        return;
+      }
+      
+      const confirmBtn = document.getElementById('confirmAddRequirementBtn');
+      const originalHTML = confirmBtn.innerHTML;
+      confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating...';
+      confirmBtn.disabled = true;
+      
+      fetch('/api/admin/requirements/create/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title,
+          description: description,
+          period: period,
+          priority: priority,
+          due_date: dueDate,
+          barangay_ids: []
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showToast(`✅ ${data.message}`, 'success');
+          closeAddRequirementModal();
+          setTimeout(() => loadSubmissions(), 1000);
+        } else {
+          throw new Error(data.error || 'Failed to create requirement');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast(`❌ ${error.message}`, 'error');
+      })
+      .finally(() => {
+        confirmBtn.innerHTML = originalHTML;
+        confirmBtn.disabled = false;
+      });
+    }
+
+    // ========== LOAD SUBMISSIONS ==========
+    function loadSubmissions() {
+      const container = document.getElementById('submissionsContainer');
+      
+      container.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Loading submissions...</p>
+        </div>
+      `;
+      
+      const barangayFilter = document.getElementById('filterBarangay').value;
+      const statusFilter = document.getElementById('filterStatus').value;
+      const periodFilter = document.getElementById('filterPeriod').value;
+      const searchTerm = document.getElementById('searchBox').value.trim();
+      
+      const params = new URLSearchParams();
+      if (barangayFilter) params.append('barangay_id', barangayFilter);
+      if (statusFilter) params.append('status', statusFilter);
+      if (periodFilter) params.append('period', periodFilter);
+      if (searchTerm) params.append('search', searchTerm);
+      
+      fetch(`/api/admin/submissions/?${params}`, {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          renderSubmissions(data.submissions);
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      })
+      .catch(error => {
+        console.error('❌ Error:', error);
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>Error Loading Submissions</h3>
+            <p>${error.message}</p>
+            <button onclick="loadSubmissions()" class="btn btn-approve" style="margin-top: 15px;">
+              🔄 Try Again
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    // ========== RENDER SUBMISSIONS ==========
+    function renderSubmissions(submissions) {
+      const container = document.getElementById('submissionsContainer');
+
+      if (!submissions || submissions.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h3>No submissions found</h3>
+            <p>Try adjusting your filters or check back later</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '';
+
+      submissions.forEach(sub => {
+        const card = document.createElement('div');
+        card.className = 'submission-card';
+        card.setAttribute('data-submission-id', sub.id);
+
+        const attachmentsBadges = (sub.attachments || []).map(att => 
+          `<div class="attachment-badge" onclick="window.open('${att.file_url}', '_blank')">
+            📎 ${att.file_name}
+          </div>`
+        ).join('');
+
+        const formatDate = (dateStr) => {
+          if (!dateStr || dateStr === 'N/A') return 'N/A';
+          const date = new Date(dateStr);
+          return isNaN(date.getTime()) ? dateStr : date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+        };
+
+        card.innerHTML = `
+          <div class="submission-header">
+            <div>
+              <div class="submission-title">${sub.title || 'Untitled'}</div>
+              <div class="submission-barangay">📍 ${sub.barangay_name || 'Unknown'}</div>
+            </div>
+            <span class="status-badge ${sub.status}">${sub.status_display}</span>
+          </div>
+
+          <div class="submission-info">
+            <div class="info-item">
+              <span class="info-label">Status</span>
+              <span class="info-value">${sub.status_display}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Due date</span>
+              <span class="info-value">${formatDate(sub.due_date)}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Submitted</span>
+              <span class="info-value">${formatDate(sub.submitted_at)}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Submitted By</span>
+              <span class="info-value">${sub.submitted_by || 'Unknown'}</span>
+            </div>
+          </div>
+
+          ${sub.update_text ? `
+            <div class="submission-update">
+              <strong style="display: block; margin-bottom: 8px;">Updates:</strong>
+              ${sub.update_text}
+            </div>
+          ` : ''}
+
+          ${(sub.attachments || []).length > 0 ? `
+            <div style="margin: 15px 0;">
+              <strong style="display: block; margin-bottom: 8px; font-size: 13px; color: #6b7280;">
+                Attachments (${sub.attachments.length}):
+              </strong>
+              <div class="attachments">${attachmentsBadges}</div>
+            </div>
+          ` : '<p style="color: #6b7280; font-size: 13px; margin: 10px 0;">No attachments</p>'}
+
+          <div class="actions">
+            ${sub.status === 'accomplished' ? `
+              <button class="btn btn-approve" onclick="openReviewModal(${sub.id}, 'approved')">✓ Approve</button>
+              <button class="btn btn-reject" onclick="openReviewModal(${sub.id}, 'rejected')">✗ Reject</button>
+            ` : `
+              <button class="btn btn-cancel" disabled style="cursor: not-allowed;">Already ${sub.status_display}</button>
+            `}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // ========== REVIEW MODAL ==========
+    function openReviewModal(submissionId, action) {
+      currentReviewId = submissionId;
+      currentReviewAction = action;
+
+      const modal = document.getElementById('reviewModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const confirmBtn = document.getElementById('confirmReviewBtn');
+
+      document.getElementById('reviewNotes').value = '';
+
+      if (action === 'approved') {
+        modalTitle.textContent = 'Approve Submission';
+        confirmBtn.textContent = 'Approve';
+        confirmBtn.className = 'btn btn-approve';
+      } else {
+        modalTitle.textContent = 'Reject Submission';
+        confirmBtn.textContent = 'Reject';
+        confirmBtn.className = 'btn btn-reject';
+      }
+
+      modal.classList.add('show');
+      confirmBtn.onclick = confirmReview;
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.remove('show');
+      currentReviewId = null;
+      currentReviewAction = null;
+    }
+
+    function confirmReview() {
+      if (!currentReviewId || !currentReviewAction) {
+        showToast('Invalid review action', 'error');
+        return;
+      }
+      
+      const reviewNotes = document.getElementById('reviewNotes').value.trim();
+      const endpoint = `/api/admin/review/${currentReviewId}/`;
+      
+      const confirmBtn = document.getElementById('confirmReviewBtn');
+      const originalText = confirmBtn.textContent;
+      confirmBtn.textContent = 'Processing...';
+      confirmBtn.disabled = true;
+      
+      fetch(endpoint, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          action: currentReviewAction,
+          review_notes: reviewNotes 
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const actionText = currentReviewAction === 'approved' ? 'approved' : 'rejected';
+          showToast(`Submission ${actionText} successfully!`, 'success');
+          
+          const card = document.querySelector(`[data-submission-id="${currentReviewId}"]`);
+          if (card) {
+            const statusBadge = card.querySelector('.status-badge');
+            if (statusBadge) {
+              statusBadge.className = `status-badge ${currentReviewAction}`;
+              statusBadge.textContent = currentReviewAction === 'approved' ? 'Approved' : 'Rejected';
+            }
+            
+            const actionsDiv = card.querySelector('.actions');
+            if (actionsDiv) {
+              actionsDiv.innerHTML = `
+                <button class="btn btn-cancel" disabled style="cursor: not-allowed;">
+                  Already ${actionText}
+                </button>
+              `;
+            }
+            
+            const statusFilter = document.getElementById('filterStatus').value;
+            if (statusFilter === 'accomplished') {
+              setTimeout(() => {
+                card.style.transition = 'opacity 0.3s, transform 0.3s';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(-20px)';
+                setTimeout(() => card.remove(), 300);
+              }, 1000);
+            }
+          }
+          
+          closeReviewModal();
+          
+          setTimeout(() => {
+            loadSubmissions();
+            loadAdminNotifications();
+          }, 500);
+        } else {
+          throw new Error(data.error || 'Failed to process review');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showToast(error.message, 'error');
+        confirmBtn.textContent = originalText;
+        confirmBtn.disabled = false;
+      });
+    }
+
+    // ========== NOTIFICATIONS ==========
+    function toggleAdminNotifications() {
+      const dropdown = document.getElementById('adminNotificationDropdown');
+      if (!dropdown) return;
+      
+      if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+        dropdown.classList.remove('show');
+      } else {
+        dropdown.style.display = 'block';
+        dropdown.classList.add('show');
+        loadAdminNotifications();
+      }
+    }
+
+    function loadAdminNotifications() {
+      fetch('/api/notifications/', {
+        method: 'GET',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          renderAdminNotifications(data.notifications);
+          updateAdminNotificationBadge(data.unread_count);
+        } else {
+          console.error('Failed to load notifications:', data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error loading notifications:', error);
+      });
+    }
+
+    function renderAdminNotifications(notifications) {
+      const container = document.getElementById('adminNotificationList');
+      
+      if (!container) return;
+      
+      if (notifications.length === 0) {
+        container.innerHTML = `
+          <div class="notification-empty">
+            <div class="notification-empty-icon">🔔</div>
+            <p>No notifications yet</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      notifications.forEach(notif => {
+        const item = document.createElement('div');
+        item.className = `notification-item ${notif.is_read ? '' : 'unread'}`;
+        item.setAttribute('data-id', notif.id);
+        item.onclick = () => handleAdminNotificationClick(notif);
+        
+        const iconClass = getNotificationIconClass(notif.type);
+        const icon = getNotificationIcon(notif.type);
+        
+        item.innerHTML = `
+          <div class="notification-icon ${iconClass}">
+            ${icon}
+          </div>
+          <div class="notification-content">
+            <div class="notification-title">${notif.title}</div>
+            <div class="notification-message">${notif.message}</div>
+            <div class="notification-time">${notif.time_ago}</div>
+          </div>
+        `;
+        
+        container.appendChild(item);
+      });
+    }
+
+    function getNotificationIconClass(type) {
+      const iconMap = {
+        'overdue': 'overdue',
+        'upcoming': 'upcoming',
+        'completed': 'completed',
+        'reminder': 'upcoming',
+        'info': 'info',
+        'new_submission': 'info',
+        'new_requirement': 'info'
+      };
+      return iconMap[type] || 'info';
+    }
+
+    function getNotificationIcon(type) {
+      const iconMap = {
+        'overdue': '⚠️',
+        'upcoming': '⏰',
+        'completed': '✅',
+        'reminder': '🔔',
+        'info': 'ℹ️',
+        'new_submission': '📋',
+        'new_requirement': '📢',
+      };
+      return iconMap[type] || '📌';
+    }
+
+    function handleAdminNotificationClick(notif) {
+      markAdminNotificationAsRead(notif.id);
+      
+      if (notif.submission_id) {
+        switchView('submissions');
+        setTimeout(() => {
+          const submissionCard = document.querySelector(`[data-submission-id="${notif.submission_id}"]`);
+          if (submissionCard) {
+            submissionCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            submissionCard.style.border = '2px solid #2456f3';
+            setTimeout(() => {
+              submissionCard.style.border = '';
+            }, 3000);
+          }
+        }, 500);
+      }
+      
+      toggleAdminNotifications();
+    }
+
+    function markAdminNotificationAsRead(notificationId) {
+      fetch(`/api/notifications/${notificationId}/read/`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'X-CSRFToken': getCookie('csrftoken'),
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const item = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
+          if (item) {
+            item.classList.remove('unread');
+          }
+          
+          const badge = document.getElementById('adminNotificationBadge');
+          if (badge && badge.style.display !== 'none') {
+            const currentCount = parseInt(badge.textContent) || 0;
+            if (currentCount > 0) {
+              updateAdminNotificationBadge(currentCount - 1);
+            }
+          }
+        }
+      })
+      .catch(error => {
+        console.error('Error marking notification as read:', error);
+      });
+    }
+
+    function markAllAdminNotificationsRead() {
+      fetch('/api/notifications/mark-all-read/', {
+        method: 'POST',credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast('All notifications marked as read', 'success');
+      loadAdminNotifications();
+    }
+  })
+  .catch(error => {
+    console.error('Error marking all as read:', error);
+  });
+}
+
+function updateAdminNotificationBadge(count) {
+  const badge = document.getElementById('adminNotificationBadge');
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+// ========== ANNOUNCEMENTS ==========
+function loadAnnouncements() {
+  const container = document.getElementById('announcementsContainer');
+  
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading announcements...</p>
+    </div>
+  `;
+  
+  fetch('/api/announcements/', {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      renderAnnouncements(data.announcements);
+    } else {
+      throw new Error(data.error || 'Failed to load announcements');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>⚠️ Error Loading Announcements</h3>
+        <p>${error.message}</p>
+        <button class="btn btn-approve" onclick="loadAnnouncements()" style="margin-top: 15px;">
+          <i class="fa-solid fa-refresh"></i> Try Again
+        </button>
+      </div>
+    `;
+  });
+}
+
+function renderAnnouncements(announcements) {
+  const container = document.getElementById('announcementsContainer');
+  
+  if (!announcements || announcements.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>📢 No Announcements Yet</h3>
+        <p>Create your first announcement to notify all barangays</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = '';
+  
+  announcements.forEach(announcement => {
+    const card = document.createElement('div');
+    card.className = `announcement-card priority-${announcement.priority}`;
+    
+    card.innerHTML = `
+      <span class="priority-badge-announcement ${announcement.priority}">
+        ${announcement.priority_display || announcement.priority.toUpperCase()}
+      </span>
+      
+      <div class="announcement-title">${announcement.title}</div>
+      
+      <div class="announcement-content">
+        ${announcement.content}
+      </div>
+
+      <div class="announcement-meta">
+        <div class="meta-item">
+          <i class="fa-solid fa-user"></i>
+          <span>${announcement.posted_by}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fa-solid fa-calendar"></i>
+          <span>${announcement.posted_at}</span>
+        </div>
+        <div class="meta-item">
+          <i class="fa-solid fa-eye"></i>
+          <span>${announcement.views} views</span>
+        </div>
+        <div class="meta-item">
+          <i class="fa-solid fa-building"></i>
+          <span>Sent to ${announcement.sent_to_barangays} barangays</span>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-top: 15px;">
+        <button class="btn btn-approve" onclick="editAnnouncement(${announcement.id})" style="background: #3b82f6;">
+          <i class="fa-solid fa-edit"></i> Edit
+        </button>
+        <button class="btn btn-reject" onclick="openDeleteAnnouncementModal(${announcement.id})">
+          <i class="fa-solid fa-trash"></i> Delete
+        </button>
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+
+function openAnnouncementModal() {
+  currentAnnouncementId = null;
+  
+  // Get all elements first
+  const titleEl = document.getElementById('announcementTitle');
+  const contentEl = document.getElementById('announcementContent');
+  const dateEl = document.getElementById('announcementDate');
+  const priorityEl = document.getElementById('announcementPriority');
+  const notificationEl = document.getElementById('sendNotification');
+  const modalTitleEl = document.getElementById('announcementModalTitle');
+  const submitTextEl = document.getElementById('submitAnnouncementText');
+  
+  // Set values only if elements exist
+  if (modalTitleEl) modalTitleEl.textContent = 'Create Announcement';
+  if (titleEl) titleEl.value = '';
+  if (contentEl) contentEl.value = '';
+  if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+  if (priorityEl) priorityEl.value = 'medium';
+  if (notificationEl) notificationEl.checked = true;
+  if (submitTextEl) submitTextEl.textContent = 'Create Announcement';
+  
+  // Show modal
+  const modal = document.getElementById('announcementModal');
+  if (modal) modal.classList.add('show');
+}
+
+function closeAnnouncementModal() {
+  document.getElementById('announcementModal').classList.remove('show');
+  currentAnnouncementId = null;
+}
+
+function editAnnouncement(id) {
+  currentAnnouncementId = id;
+  
+  fetch('/api/announcements/', {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const announcement = data.announcements.find(a => a.id === id);
+      if (announcement) {
+        const modalTitleEl = document.getElementById('announcementModalTitle');
+        const titleEl = document.getElementById('announcementTitle');
+        const contentEl = document.getElementById('announcementContent');
+        const dateEl = document.getElementById('announcementDate');
+        const priorityEl = document.getElementById('announcementPriority');
+        const notificationEl = document.getElementById('sendNotification');
+        const submitTextEl = document.getElementById('submitAnnouncementText');
+        
+        if (modalTitleEl) modalTitleEl.textContent = 'Edit Announcement';
+        if (titleEl) titleEl.value = announcement.title;
+        if (contentEl) contentEl.value = announcement.content;
+        if (dateEl) dateEl.value = announcement.date || new Date().toISOString().split('T')[0];
+        if (priorityEl) priorityEl.value = announcement.priority;
+        if (notificationEl) notificationEl.checked = false;
+        if (submitTextEl) submitTextEl.textContent = 'Update Announcement';
+        
+        const modal = document.getElementById('announcementModal');
+        if (modal) modal.classList.add('show');
+      }
+    }
+  })
+  .catch(error => {
+    showToast('Error loading announcement: ' + error.message, 'error');
+  });
+}
+
+
+function submitAnnouncement() {
+  const title = document.getElementById('announcementTitle').value.trim();
+  const content = document.getElementById('announcementContent').value.trim();
+  
+  // ADD THIS LINE
+  const date = document.getElementById('announcementDate').value;
+  
+  const priority = document.getElementById('announcementPriority').value;
+  const sendNotification = document.getElementById('sendNotification').checked;
+  
+  // UPDATE THIS VALIDATION
+  if (!title || !content || !date) {
+    showToast('Please fill in all required fields', 'error');
+    return;
+  }
+  
+  const submitBtn = document.getElementById('submitAnnouncementBtn');
+  const originalHTML = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+  submitBtn.disabled = true;
+  
+  const url = currentAnnouncementId 
+    ? `/api/announcements/${currentAnnouncementId}/update/`
+    : '/api/announcements/create/';
+  
+  fetch(url, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      title: title,
+      content: content,
+      date: date,  // ADD THIS LINE
+      priority: priority,
+      send_notification: sendNotification
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const action = currentAnnouncementId ? 'updated' : 'created';
+      showToast(`✅ Announcement ${action} successfully! ${data.notifications_sent || 0} barangays notified.`, 'success');
+      closeAnnouncementModal();
+      loadAnnouncements();
+    } else {
+      throw new Error(data.error || 'Failed to save announcement');
+    }
+  })
+  .catch(error => {
+    showToast('❌ ' + error.message, 'error');
+  })
+  .finally(() => {
+    submitBtn.innerHTML = originalHTML;
+    submitBtn.disabled = false;
+  });
+}
+
+function openDeleteAnnouncementModal(id) {
+  deleteAnnouncementId = id;
+  document.getElementById('deleteAnnouncementModal').classList.add('show');
+}
+
+function closeDeleteAnnouncementModal() {
+  document.getElementById('deleteAnnouncementModal').classList.remove('show');
+  deleteAnnouncementId = null;
+}
+
+function confirmDeleteAnnouncement() {
+  if (!deleteAnnouncementId) return;
+  
+  fetch(`/api/announcements/${deleteAnnouncementId}/delete/`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast('✅ Announcement deleted successfully', 'success');
+      closeDeleteAnnouncementModal();
+      loadAnnouncements();
+    } else {
+      throw new Error(data.error || 'Failed to delete announcement');
+    }
+  })
+  .catch(error => {
+    showToast('❌ ' + error.message, 'error');
+  });
+}
+
+// ========== VIEW SWITCHING ==========
+// ========== VIEW SWITCHING ==========
+function switchView(view) {
+  
+  currentView = view;
+  const pageTitle = document.getElementById('pageTitle');
+  const mainActionBtn = document.getElementById('mainActionBtn');
+  
+  // Update menu items
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  
+  // Update tabs
+  document.querySelectorAll('.view-tab').forEach(tab => tab.classList.remove('active'));
+  
+  if (view === 'submissions') {
+    pageTitle.textContent = 'Requirements Monitoring';
+    mainActionBtn.onclick = openAddRequirementModal;
+    mainActionBtn.innerHTML = 'Add Requirement';
+    mainActionBtn.style.display = 'flex';
+    document.getElementById('requirementsMenuItem').classList.add('active');
+    document.getElementById('submissionsTab').classList.add('active');
+    document.getElementById('submissionsView').classList.remove('hidden');
+    document.getElementById('requirementsView').classList.add('hidden');
+    document.getElementById('announcementsView').classList.add('hidden');
+    document.getElementById('calendarView').classList.add('hidden'); // ADD THIS LINE
+    loadSubmissions();
+    
+  } else if (view === 'requirements') {
+    pageTitle.textContent = 'Manage Requirements';
+    mainActionBtn.onclick = openAddRequirementModal;
+    mainActionBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Requirement';
+    mainActionBtn.style.display = 'flex';
+    document.getElementById('requirementsMenuItem').classList.add('active');
+    document.getElementById('requirementsTab').classList.add('active');
+    document.getElementById('submissionsView').classList.add('hidden');
+    document.getElementById('requirementsView').classList.remove('hidden');
+    document.getElementById('announcementsView').classList.add('hidden');
+    document.getElementById('calendarView').classList.add('hidden');
+    loadRequirementsList(); // ✅ ADD THIS LINE
+    
+  } else if (view === 'announcements') {
+    pageTitle.textContent = 'Announcements';
+    mainActionBtn.onclick = openAnnouncementModal;
+    mainActionBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Create Announcement';
+    mainActionBtn.style.display = 'flex';
+    document.getElementById('announcementsMenuItem').classList.add('active');
+    document.getElementById('announcementsTab').classList.add('active');
+    document.getElementById('submissionsView').classList.add('hidden');
+    document.getElementById('requirementsView').classList.add('hidden');
+    document.getElementById('announcementsView').classList.remove('hidden');
+    document.getElementById('calendarView').classList.add('hidden'); // ADD THIS LINE
+    loadAnnouncements();
+    
+  } else if (view === 'calendar') {
+    pageTitle.textContent = 'Calendar View';
+    mainActionBtn.style.display = 'none';
+    document.getElementById('calendarMenuItem').classList.add('active');
+    document.getElementById('submissionsView').classList.add('hidden');
+    document.getElementById('requirementsView').classList.add('hidden');
+    document.getElementById('announcementsView').classList.add('hidden');
+    document.getElementById('calendarView').classList.remove('hidden');
+
+    const contentArea = document.querySelector('.content-area');
+    contentArea.style.overflow = 'auto'; // Allow page scrolling
+    loadCalendar();
+  }
+}
+// ========== CALENDAR FUNCTIONS ==========
+function loadCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  
+  if (!grid) {
+    console.error('❌ calendarGrid element not found!');
+    return;
+  }
+  
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading calendar...</p></div>';
+  
+  console.log('📅 Loading calendar:', currentCalendarMonth + 1, currentCalendarYear);
+  
+  // Fetch all requirements for the month
+  fetch(`/api/admin/calendar/?month=${currentCalendarMonth + 1}&year=${currentCalendarYear}`, {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => {
+    console.log('📥 Response status:', response.status);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('📦 Calendar data received:', data);
+    if (data.success) {
+      calendarRequirements = data.requirements || [];
+      console.log('✅ Requirements loaded:', calendarRequirements.length);
+      renderCalendar();
+    } else {
+      throw new Error(data.error || 'Failed to load calendar');
+    }
+  })
+  .catch(error => {
+    console.error('❌ Calendar error:', error);
+    grid.innerHTML = `
+      <div class="empty-state">
+        <h3>⚠️ Error Loading Calendar</h3>
+        <p>${error.message}</p>
+        <button onclick="loadCalendar()" class="btn btn-approve" style="margin-top: 15px;">
+          🔄 Try Again
+        </button>
+      </div>
+    `;
+  });
+}
+
+function renderCalendar() {
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                      'July', 'August', 'September', 'October', 'November', 'December'];
+  
+  document.getElementById('calendarMonthYear').textContent = 
+    `${monthNames[currentCalendarMonth]} ${currentCalendarYear}`;
+  
+  const grid = document.getElementById('calendarGrid');
+  const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
+  const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
+  const prevLastDay = new Date(currentCalendarYear, currentCalendarMonth, 0);
+  
+  const firstDayOfWeek = firstDay.getDay();
+  const lastDate = lastDay.getDate();
+  const prevLastDate = prevLastDay.getDate();
+  
+  let html = '<div class="calendar-grid">';
+  
+  // Day headers
+  const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  dayHeaders.forEach(day => {
+    html += `<div class="calendar-day-header">${day}</div>`;
+  });
+  
+  // Previous month days
+  for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+    html += `<div class="calendar-day other-month">
+      <div class="calendar-day-number">${prevLastDate - i}</div>
+    </div>`;
+  }
+  
+  // Current month days
+  // Current month days
+const today = new Date();
+for (let day = 1; day <= lastDate; day++) {
+  const dateStr = `${currentCalendarYear}-${String(currentCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const isToday = today.getDate() === day && 
+                  today.getMonth() === currentCalendarMonth && 
+                  today.getFullYear() === currentCalendarYear;
+  
+  const dayRequirements = calendarRequirements.filter(req => req.due_date === dateStr);
+  
+  html += `<div class="calendar-day ${isToday ? 'today' : ''}" onclick="showDayDetails('${dateStr}')">
+    <div class="calendar-day-number">${day}</div>`;
+  
+  // Show only first 2 requirements to avoid overflow
+  dayRequirements.slice(0, 2).forEach(req => {
+    const statusClass = req.status.replace('_', '-');
+    html += `<div class="calendar-requirement ${statusClass}" title="${req.title} - ${req.barangay_name}">
+      ${req.title}
+    </div>`;
+  });
+  
+  if (dayRequirements.length > 2) {
+    html += `<div class="calendar-day-more">
+      +${dayRequirements.length - 2} more
+    </div>`;
+  }
+  
+  html += '</div>';
+} 
+  // Next month days
+  const remainingDays = 42 - (firstDayOfWeek + lastDate);
+  for (let day = 1; day <= remainingDays; day++) {
+    html += `<div class="calendar-day other-month">
+      <div class="calendar-day-number">${day}</div>
+    </div>`;
+  }
+  
+  html += '</div>';
+  grid.innerHTML = html;
+}
+
+function previousMonth() {
+  currentCalendarMonth--;
+  if (currentCalendarMonth < 0) {
+    currentCalendarMonth = 11;
+    currentCalendarYear--;
+  }
+  loadCalendar();
+}
+
+function nextMonth() {
+  currentCalendarMonth++;
+  if (currentCalendarMonth > 11) {
+    currentCalendarMonth = 0;
+    currentCalendarYear++;
+  }
+  loadCalendar();
+}
+
+function showDayDetails(dateStr) {
+  const dayRequirements = calendarRequirements.filter(req => req.due_date === dateStr);
+  
+  if (dayRequirements.length === 0) {
+    showToast('No requirements on this date', 'success');
+    return;
+  }
+  
+  // Format date nicely
+  const date = new Date(dateStr);
+  const formattedDate = date.toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  
+  document.getElementById('dayDetailsTitle').textContent = `Requirements - ${formattedDate}`;
+  
+  const content = document.getElementById('dayDetailsContent');
+  content.innerHTML = '';
+  
+  dayRequirements.forEach(req => {
+    const statusClass = req.status.replace('_', '-');
+    const card = document.createElement('div');
+    card.className = 'day-requirement-card';
+    
+    card.innerHTML = `
+      <div class="day-requirement-info">
+        <div class="day-requirement-title">${req.title}</div>
+        <div class="day-requirement-barangay">📍 ${req.barangay_name}</div>
+      </div>
+      <span class="status-badge ${statusClass}">${req.status_display}</span>
+    `;
+    
+    content.appendChild(card);
+  });
+  
+  document.getElementById('dayDetailsModal').classList.add('show');
+}
+
+function closeDayDetailsModal() {
+  document.getElementById('dayDetailsModal').classList.remove('show');
+}
+
+// ========== UTILITY FUNCTIONS ==========
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// ========== CLOSE DROPDOWN ON OUTSIDE CLICK ==========
+document.addEventListener('click', function(e) {
+  const dropdown = document.getElementById('adminNotificationDropdown');
+  const bellBtn = document.querySelector('.icon-btn[title="Notifications"]');
+  if (!e.target.closest('#adminNotificationDropdown') && 
+      !e.target.closest('.icon-btn[title="Notifications"]')) {
+    if (dropdown) {
+      dropdown.style.display = 'none';
+      dropdown.classList.remove('show');
+    }
+  }
+});
+
+// ========== CLOSE MODAL ON OUTSIDE CLICK ==========
+window.onclick = function(event) {
+  if (event.target.classList.contains('modal')) {
+    closeReviewModal();
+    closeAddRequirementModal();
+    closeAnnouncementModal();
+    closeDeleteAnnouncementModal();
+    closeDayDetailsModal();
+  }
+}// ========== MANAGE REQUIREMENTS ==========
+let currentEditRequirementId = null;
+let currentArchiveRequirementId = null;
+
+function loadRequirementsList() {
+  const container = document.getElementById('requirementsContainer');
+  
+  container.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading requirements...</p>
+    </div>
+  `;
+  
+  const period = document.getElementById('filterReqPeriod').value;
+  const priority = document.getElementById('filterReqPriority').value;
+  const status = document.getElementById('filterReqStatus').value;
+  const sort = document.getElementById('filterReqSort').value;
+  
+  const params = new URLSearchParams();
+  if (period) params.append('period', period);
+  if (priority) params.append('priority', priority);
+  if (status) params.append('status', status);
+  if (sort) params.append('sort', sort);
+  
+  fetch(`/api/admin/requirements/list/?${params}`, {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      renderRequirementsList(data.requirements);
+    } else {
+      throw new Error(data.error || 'Failed to load requirements');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>Error Loading Requirements</h3>
+        <p>${error.message}</p>
+        <button onclick="loadRequirementsList()" class="btn btn-approve" style="margin-top: 15px;">
+          🔄 Try Again
+        </button>
+      </div>
+    `;
+  });
+}
+
+function renderRequirementsList(requirements) {
+  const container = document.getElementById('requirementsContainer');
+  
+  if (!requirements || requirements.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>No requirements found</h3>
+        <p>Try adjusting your filters or create a new requirement</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  requirements.forEach(req => {
+    const card = document.createElement('div');
+    card.className = 'submission-card';
+    card.style.borderLeft = req.priority === 'urgent' ? '4px solid #ef4444' : 
+                            req.priority === 'important' ? '4px solid #f59e0b' : 
+                            '4px solid #3b82f6';
+    
+    const priorityColors = {
+      'urgent': 'background: #fee2e2; color: #991b1b;',
+      'important': 'background: #fef3c7; color: #92400e;',
+      'normal': 'background: #dbeafe; color: #1e40af;'
+    };
+    
+    const statusBadge = req.is_active 
+      ? '<span class="status-badge approved">Active</span>'
+      : '<span class="status-badge rejected">Archived</span>';
+    
+    card.innerHTML = `
+      <div class="submission-header">
+        <div>
+          <div class="submission-title">${req.title}</div>
+          <div class="submission-barangay">
+            <span style="padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; ${priorityColors[req.priority]}">
+              ${req.priority.toUpperCase()}
+            </span>
+          </div>
+        </div>
+        ${statusBadge}
+      </div>
+
+      <div class="submission-update" style="margin: 15px 0;">
+        ${req.description}
+      </div>
+
+      <div class="submission-info">
+        <div class="info-item">
+          <span class="info-label">Period</span>
+          <span class="info-value">${req.period_display}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Due Date</span>
+          <span class="info-value">${req.due_date}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Created By</span>
+          <span class="info-value">${req.created_by}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Created At</span>
+          <span class="info-value">${req.created_at}</span>
+        </div>
+      </div>
+
+      
+
+      <div class="actions">
+        <button class="btn btn-approve" onclick="openEditRequirementModal(${req.id})" style="background: #3b82f6;">
+          <i class="fa-solid fa-edit"></i> Edit
+        </button>
+        ${req.is_active ? `
+          <button class="btn" onclick="openArchiveRequirementModal(${req.id})" style="background: #f59e0b; color: white;">
+            <i class="fa-solid fa-archive"></i> Archive
+          </button>
+        ` : `
+          <button class="btn btn-approve" onclick="restoreRequirement(${req.id})">
+            <i class="fa-solid fa-undo"></i> Restore
+          </button>
+        `}
+      </div>
+    `;
+    
+    container.appendChild(card);
+  });
+}
+
+// Edit Requirement Modal Functions
+function openEditRequirementModal(requirementId) {
+  currentEditRequirementId = requirementId;
+  
+  // Fetch requirement details
+  fetch(`/api/admin/requirements/${requirementId}/`, {
+    method: 'GET',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const req = data.requirement;
+      document.getElementById('editReqId').value = req.id;
+      document.getElementById('editReqTitle').value = req.title;
+      document.getElementById('editReqDescription').value = req.description;
+      document.getElementById('editReqPeriod').value = req.period;
+      document.getElementById('editReqDueDate').value = req.due_date;
+      document.getElementById('editReqPriority').value = req.priority;
+      
+      document.getElementById('editRequirementModal').classList.add('show');
+    } else {
+      showToast('Error loading requirement details', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast('Error loading requirement details', 'error');
+  });
+}
+
+function closeEditRequirementModal() {
+  document.getElementById('editRequirementModal').classList.remove('show');
+  currentEditRequirementId = null;
+}
+
+function confirmEditRequirement() {
+  const title = document.getElementById('editReqTitle').value.trim();
+  const description = document.getElementById('editReqDescription').value.trim();
+  const period = document.getElementById('editReqPeriod').value;
+  const dueDate = document.getElementById('editReqDueDate').value;
+  const priority = document.getElementById('editReqPriority').value;
+  
+  if (!title || !description || !period || !dueDate || !priority) {
+    showToast('Please fill in all required fields', 'error');
+    return;
+  }
+  
+  const confirmBtn = document.getElementById('confirmEditRequirementBtn');
+  const originalHTML = confirmBtn.innerHTML;
+  confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+  confirmBtn.disabled = true;
+  
+  fetch(`/api/admin/requirements/${currentEditRequirementId}/update/`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      title: title,
+      description: description,
+      period: period,
+      due_date: dueDate,
+      priority: priority
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast('✅ Requirement updated successfully!', 'success');
+      closeEditRequirementModal();
+      loadRequirementsList();
+    } else {
+      throw new Error(data.error || 'Failed to update requirement');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast(`❌ ${error.message}`, 'error');
+  })
+  .finally(() => {
+    confirmBtn.innerHTML = originalHTML;
+    confirmBtn.disabled = false;
+  });
+}
+
+// Archive Functions
+function openArchiveRequirementModal(requirementId) {
+  currentArchiveRequirementId = requirementId;
+  document.getElementById('archiveRequirementModal').classList.add('show');
+}
+
+function closeArchiveRequirementModal() {
+  document.getElementById('archiveRequirementModal').classList.remove('show');
+  currentArchiveRequirementId = null;
+}
+
+function confirmArchiveRequirement() {
+  if (!currentArchiveRequirementId) return;
+  
+  fetch(`/api/admin/requirements/${currentArchiveRequirementId}/archive/`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast('✅ Requirement archived successfully', 'success');
+      closeArchiveRequirementModal();
+      loadRequirementsList();
+    } else {
+      throw new Error(data.error || 'Failed to archive requirement');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast(`❌ ${error.message}`, 'error');
+  });
+}
+
+function restoreRequirement(requirementId) {
+  if (!confirm('Restore this requirement? It will become visible to barangays again.')) return;
+  
+  fetch(`/api/admin/requirements/${requirementId}/restore/`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showToast('✅ Requirement restored successfully', 'success');
+      loadRequirementsList();
+    } else {
+      throw new Error(data.error || 'Failed to restore requirement');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    showToast(`❌ ${error.message}`, 'error');
+  });
+}
+</script>
+<!-- Edit Requirement Modal -->
+<div class="modal" id="editRequirementModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="editRequirementModalTitle">Edit Requirement</h2>
+      <button class="close-btn" onclick="closeEditRequirementModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editReqId">
+      
+      <label for="editReqTitle">Title <span style="color: red;">*</span></label>
+      <input type="text" id="editReqTitle" placeholder="Enter requirement title..." required>
+      
+      <label for="editReqDescription">Description <span style="color: red;">*</span></label>
+      <textarea id="editReqDescription" placeholder="Describe the requirement in detail..." required></textarea>
+      
+      <label for="editReqPeriod">Period <span style="color: red;">*</span></label>
+      <select id="editReqPeriod" required>
+        <option value="">Select period...</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+        <option value="quarterly">Quarterly</option>
+        <option value="semestral">Semestral</option>
+        <option value="annually">Annually</option>
+      </select>
+
+      <label for="editReqDueDate">Due Date <span style="color: red;">*</span></label>
+      <input type="date" id="editReqDueDate" required>
+      
+      <label for="editReqPriority">Priority <span style="color: red;">*</span></label>
+      <select id="editReqPriority" required>
+        <option value="">Select priority...</option>
+        <option value="normal">Normal</option>
+        <option value="important">Important</option>
+        <option value="urgent">Urgent</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeEditRequirementModal()">Cancel</button>
+      <button class="btn btn-approve" id="confirmEditRequirementBtn" onclick="confirmEditRequirement()">
+        <i class="fa-solid fa-save"></i> Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Archive Requirement Confirmation Modal -->
+<div class="modal" id="archiveRequirementModal">
+  <div class="modal-content" style="max-width: 450px;">
+    <div class="modal-header">
+      <h2>Confirm Archive</h2>
+      <button class="close-btn" onclick="closeArchiveRequirementModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="color: #6b7280; font-size: 14px; line-height: 1.6;">
+        Are you sure you want to archive this requirement? This will hide it from barangays, but you can restore it later.
+      </p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-cancel" onclick="closeArchiveRequirementModal()">Cancel</button>
+      <button class="btn" style="background: #f59e0b; color: white;" onclick="confirmArchiveRequirement()">
+        <i class="fa-solid fa-archive"></i> Archive
+      </button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
